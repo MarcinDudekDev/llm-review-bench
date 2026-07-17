@@ -63,3 +63,6 @@ if __name__ == "__main__":
     grouped("latency_median_s",
             "Median latency by task (one-shot, tools disabled)",
             "Median latency (seconds)", "latency_by_task.png", fmt="{:.0f}")
+    grouped("cost_median_usd",
+            "Median cost per run by task (one-shot, tools disabled)",
+            "Median cost (USD per run)", "cost_by_task.png", fmt="${:.3f}")

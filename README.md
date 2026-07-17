@@ -252,6 +252,46 @@ hard→4.8, commands→tie), but absolute review scores dropped now that models 
 sections. 4.8 is faster on *both* review tasks (v1 and v2), but 4.6 is faster on command generation (v3).
 There is no stable "faster model"; it flips with the kind of task, not just its hardness.
 
+### Four-model comparison: Sonnet 5 and Haiku 4.5
+
+The Opus tie raised the obvious question — what happens across a real *tier* gap? So all four tasks
+were run on **Claude Sonnet 5** and **Claude Haiku 4.5** under the same enforced one-shot condition
+(`--tools ""` + `num_turns==1`). This is where the benchmark finally separated models cleanly.
+
+Accuracy — review tasks are the 0–10 judged score (both judges agreed); command tasks are exec-scored totals:
+
+| Task | Opus 4.6 | Opus 4.8 | Sonnet 5 | Haiku 4.5 |
+|---|---|---|---|---|
+| v1 easy review | 8.0 | 7.0 | 8.0 | **5.5** |
+| v2 hard review | 8.2 | 9.4 | 8.8 | **6.5** |
+| v3 short commands | 100/100 | 100/100 | 100/100 | 93/100 |
+| v4 hard commands | 180/180 | 179/180 | 179/180 | **122/180** |
+
+Median latency (seconds), same runs:
+
+| Task | Opus 4.6 | Opus 4.8 | Sonnet 5 | Haiku 4.5 |
+|---|---|---|---|---|
+| v1 | 46.7 | 24.7 | **10.6** | 112.2 |
+| v2 | 224 | 174 | **115** | 153 |
+| v3 | 17.8 | 22.4 | **12.8** | 80.9 |
+| v4 | 143 | 124 | **93** | 193 |
+
+Charts: `blog/chart-1.png` (accuracy) and `blog/chart-2.png` (latency).
+
+**Two findings the Opus-vs-Opus pairing never produced:**
+
+1. **Sonnet 5 is the value winner.** It matched Opus 4.8 on the hard command set (179/180), stayed within
+   a point on hard review, ran the **fastest of all four models on every task**, and lists at a third of
+   Opus pricing ($3/$15 vs $5/$25). On this data it's the sensible default for review + command work.
+2. **Haiku 4.5 is both the least accurate *and* the slowest model.** It drops to 122/180 on hard commands
+   and 5.5/10 on easy review, and it's the slowest model on v1/v3/v4 — 80.9s vs Sonnet's 12.8s on short
+   commands, *costing more per run* despite a third the per-token rate. The cause is **adaptive thinking**:
+   Haiku burns a large thinking-token budget on simple tasks, which erases its fast-and-cheap positioning.
+   Reach for it on a task that needs real reasoning and you may pay more for less — measure first.
+
+Consolidated data for all four models is in `results/ALL_RESULTS.json`; the Sonnet/Haiku summary is in
+`results/sonnet_haiku_summary.json`. A full research-paper writeup of the whole investigation lives in `blog/`.
+
 ## Known limitations
 
 - **Small n.** Everything here is directional. Model-vs-model gaps at n=1–3 are not real.
