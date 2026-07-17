@@ -1,11 +1,11 @@
 {
   "mapping": {
-    "A": "opus-4-6",
-    "B": "opus-4-8"
+    "A": "sonnet-5",
+    "B": "haiku-4-5"
   },
   "verdicts": {
-    "fable-5": "A_SCORE: 8.2/10\nA_FOUND: A:8, A:36, A:49, B:11, B:16, B:27, C:7 (7 \u00d7 0.6 = 4.2; B:5 flagged on the right line but with the PHP 7 left-associativity/wrong-result mechanism, not the PHP 8 fatal compile error \u2014 0 pts per rubric, not an FP; missed A:35, C:6). Part D: exact match, 4.0.\nA_FALSE_POSITIVES: none\n\nB_SCORE: 9.4/10\nB_FOUND: A:35, A:36, A:49, B:5, B:11, B:16, B:27, C:6, C:7 (9 \u00d7 0.6 = 5.4; missed only A:8). Part D: exact match, 4.0.\nB_FALSE_POSITIVES: none\n\nRANKING: B, A",
-    "grok": "A_SCORE: 8.2/10\nA_FOUND: A:8, A:36, A:49, B:11, B:16, B:27, C:7\nA_FALSE_POSITIVES: none\nB_SCORE: 9.4/10\nB_FOUND: A:35, A:36, A:49, B:5, B:11, B:16, B:27, C:6, C:7\nB_FALSE_POSITIVES: none\nRANKING: B, A\n\nStopped at: \u23f1 2026-07-17 16:25:12"
+    "fable-5": "A_SCORE: 8.8/10\nA_FOUND: A:36, A:49, B:5, B:11, B:16, B:27, C:6, C:7 (8 \u00d7 0.6 = 4.8; Part D exact match = 4.0)\nA_FALSE_POSITIVES: none\n\nB_SCORE: 6.5/10\nB_FOUND: A:36 (A:22 + A:36 both state the newline-framing mechanism \u2014 same keyed bug, credited once), B:11, B:16, C:6, C:7 (5 \u00d7 0.6 = 3.0; Part D has one extra line `S2-in` = \u22120.5 \u2192 3.5)\nB_FALSE_POSITIVES: none (duplicate A:22/A:36 lines are both keyed, not penalized)\n\nRANKING: A, B\n\nStopped at: \u23f1 2026-07-17 16:31:22",
+    "grok": "A_SCORE: 8.8/10\nA_FOUND: A:36, A:49, B:5, B:11, B:16, B:27, C:6, C:7\nA_FALSE_POSITIVES: none\nB_SCORE: 6.5/10\nB_FOUND: A:36, B:11, B:16, C:6, C:7\nB_FALSE_POSITIVES: none\nRANKING: A, B"
   },
   "trial": 1
 }

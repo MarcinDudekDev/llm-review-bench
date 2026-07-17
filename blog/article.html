@@ -1,0 +1,157 @@
+<div class="tldr">
+  <p><strong>Abstract.</strong> I built a small benchmark to answer one question: is Claude Opus 4.6 actually worse than 4.8, or does it just feel older? It scores the half of code review that most evals ignore, which is restraint - not flagging correct code that looks suspicious. Four models, four task families, one-shot and mechanically scored. The two Opus models came out statistically tied, and they cost the same, so there's no reason to pick one on price. Across a real tier gap, Sonnet 5 matched Opus on almost everything while running fastest and costing a third as much. The surprise was Haiku 4.5: it was both the least accurate model and the slowest, because adaptive thinking makes it burn a huge token budget on simple tasks. Every number here is directional, small-n, one machine. The method is the point.</p>
+</div>
+
+<p>This started as a boring question. Can I still run Claude Code on Opus 4.6? It's not in the model picker anymore. Ten minutes of poking gave me the answer - pass the full model ID to <code>--model</code> and the picker just hides it. But the question underneath wouldn't let go. Is 4.6 actually worse than 4.8, or does it only feel older because it's not the default?</p>
+
+<p>So I built a benchmark. Then I built a better one. Then I found out my benchmark was lying to me, twice, and I had to fix it before I could trust a single number. By the end I'd tested four models across four task families. The most interesting results weren't about which model won. They were about how easy it is to measure the wrong thing and believe it.</p>
+
+<p>The whole harness is on GitHub: <a href="https://github.com/MarcinDudekDev/llm-review-bench">MarcinDudekDev/llm-review-bench</a>. Mistakes documented in the README, on purpose.</p>
+
+<h2>1. The design: score restraint</h2>
+
+<p>Most "find the bugs" evals reward finding things. That's a problem. Frontier models are very good at finding things, so good that the eval saturates and tells you nothing. My first task had six planted bugs in a FastAPI snippet. Every model found all six. Ceiling hit. Useless.</p>
+
+<p>The skill that actually separates a good reviewer from a noisy one is the opposite. Knowing when to shut up. A reviewer who flags every line that looks a bit off isn't thorough, they're exhausting. So every task ships three kinds of code:</p>
+
+<ul>
+  <li><strong>Bugs</strong> - real defects, credited only when the model names the actual mechanism.</li>
+  <li><strong>Traps</strong> - code that looks wrong but is provably correct on the pinned versions. Flagging a trap costs a point.</li>
+  <li><strong>Neutral</strong> - real but stylistic observations that earn neither credit nor penalty.</li>
+</ul>
+
+<p>The traps carry the whole thing. An <code>in_array</code> "type juggling" bug that PHP 8 quietly killed. An unquoted variable that word-splits in bash but not in zsh. A synchronous generator that "blocks the event loop", except Starlette runs it in a threadpool. Each one is bait that a well-read model reflexively flags. The good models are the ones that don't bite.</p>
+
+<h2>2. Four tasks</h2>
+
+<ul>
+  <li><strong>v1</strong> - 6 bugs and 2 traps in one snippet. Easy. It ceilinged. I kept it as a documented failure.</li>
+  <li><strong>v2</strong> - 10 obscure version-specific bugs and 6 traps across Python 3.14, PHP 8, and zsh, plus an exact-output asyncio prediction. Hard.</li>
+  <li><strong>v3</strong> - 10 shell-command tasks, scored by running the command and byte-matching stdout. No judge.</li>
+  <li><strong>v4</strong> - 18 adversarially-filtered hard command tasks. More on that below.</li>
+</ul>
+
+<p>v1 and v2 are code review, blind-judged by two other models. v3 and v4 are command generation. The model emits one shell command, the harness runs it in a sandbox and compares stdout to a golden value. Binary, mechanical, no opinion.</p>
+
+<h2>3. Three ways my benchmark lied to me</h2>
+
+<h3>3.1 A timeout measures the weather, not the model</h3>
+
+<p>My first head-to-head used a 60-second cap. Opus 4.6 timed out with no output. Opus 4.8 finished in 28 seconds. Clean win for 4.8.</p>
+
+<p>It was noise. When I re-ran uncapped, the same model on the same prompt swung from 27 seconds to 132 seconds and back. Cost swung 8x on the same model, which is prompt-cache state, not economics. My "4.8 is faster" result was an artifact of an arbitrary timeout landing on the wrong side of a noisy distribution.</p>
+
+<div class="insight">
+  <p>A tight timeout doesn't tell you which model is faster. It tells you what the API weather was that afternoon. And it hands you a confident, reproducible-looking, completely wrong answer. I nearly shipped it.</p>
+</div>
+
+<h3>3.2 "Make it hard" doesn't make it hard</h3>
+
+<p>To separate two frontier models I needed genuinely hard tasks. My first instinct was to prompt a strong model to design a brutal one. That produced a 10/10 ceiling twice. Frontier models are bad at knowing what's hard for other frontier models.</p>
+
+<p>So I used them as difficulty oracles instead. Fable and Grok each proposed candidate tasks. Every reference command was validated by execution. Then each model attempted the other's tasks one-shot, and I kept only the tasks the opposing model got wrong. Those are empirically hard, by construction.</p>
+
+<p>The result was its own finding. 17 of 18 candidates got solved. Two capable models could not reliably write a shell task that stumps a frontier peer. The single survivor turned on a platform-specific <code>%.2f</code> rounding quirk that you can't know without running it on that exact host. One-shot BSD shell-command generation is basically saturated for frontier models.</p>
+
+<h3>3.3 I wasn't testing what I claimed</h3>
+
+<p>Then a simple question. "Are you sure they only get one shot?"</p>
+
+<p>I wasn't. Claude Code runs with tools enabled by default. Nothing stopped a model from creating the input files, running its command, checking the output, and revising, all before it "answered". The tasks even describe the exact input files. My "one shot, no execution" claim was a hope, not a guarantee.</p>
+
+<p>I made it structural. Disable tools so execution is impossible, and assert that the model answered in a single turn (a tool call forces a second turn, which now raises instead of scoring):</p>
+
+<pre><code>p = subprocess.run(
+    ["claude", "--model", model, "--tools", "", "-p", prompt,
+     "--output-format", "json"],
+    capture_output=True, text=True, timeout=timeout,
+)
+d = json.loads(p.stdout)
+if d.get("num_turns", 1) != 1:          # a tool call would force turn 2
+    raise RuntimeError("not one-shot")</code></pre>
+
+<p>Did it change the result? I guessed it would. I thought tools had been propping up the accuracy ceiling. I was wrong again. Under the guaranteed condition both Opus models were still essentially perfect. The ceiling was real. But now the "one shot" label is true, which matters more than whether the number moved.</p>
+
+<h2>4. Results</h2>
+
+<p>All four models, all four tasks, under the enforced one-shot condition. Review tasks are on a 0-10 judged scale (both judges agreed). Command tasks are exec-scored totals.</p>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr><th>Task</th><th>Opus 4.6</th><th>Opus 4.8</th><th>Sonnet 5</th><th>Haiku 4.5</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>v1 easy review</td><td>8.0</td><td>7.0</td><td>8.0</td><td>5.5</td></tr>
+      <tr><td>v2 hard review</td><td>8.2</td><td>9.4</td><td>8.8</td><td>6.5</td></tr>
+      <tr><td>v3 short commands</td><td>100/100</td><td>100/100</td><td>100/100</td><td>93/100</td></tr>
+      <tr><td>v4 hard commands</td><td>180/180</td><td>179/180</td><td>179/180</td><td>122/180</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<figure class="chart">
+  <img src="/blog/one-shot-code-review-benchmark/chart-1.png" alt="Grouped bar chart of accuracy per task for Opus 4.6, Opus 4.8, Sonnet 5, and Haiku 4.5. The three larger models cluster near the top on every task; Haiku 4.5 sits well below on v1 (55%) and v4 (68%).">
+  <figcaption>Accuracy by task. The three bigger models cluster near the top. Haiku 4.5 drops on the two hard tasks.</figcaption>
+</figure>
+
+<h3>4.1 Opus 4.6 vs 4.8 is a tie, and they cost the same</h3>
+
+<p>On review, difficulty picks the model. 4.6 is a bit better on easy review, 4.8 is clearly better on hard review. On command generation they're indistinguishable. Averaged out, it's a statistical tie.</p>
+
+<p>And here's the part that answers my original question for anyone hoping 4.6 is the cheap option. It isn't. Anthropic priced the whole Opus 4.x line the same, at 5 dollars per million input tokens and 25 per million output, both with a 1M context window. There's no economic reason to stay on 4.6. Pick on behavior, not price.</p>
+
+<h3>4.2 Sonnet 5 is the value story</h3>
+
+<p>The Opus tie made me want a real tier gap, so I ran everything on Sonnet 5 versus Haiku 4.5. Sonnet 5 is the standout. It matched Opus 4.8 on the hard command set (179/180), stayed within a point on hard review, and it did that while running the fastest of all four models. At 3 dollars per million input tokens it's a third of Opus pricing. If I were choosing a default model for review and command work today, on this data I'd reach for Sonnet 5 first.</p>
+
+<h3>4.3 Haiku 4.5 is where the gap finally shows</h3>
+
+<p>Haiku is the one place the benchmark separated models cleanly on accuracy. On the hard command set it scored 122/180, against 179 and 180 for the bigger models. On easy review it managed 5.5 out of 10. The traps and the hard version-specific bugs are exactly where a smaller model gets caught.</p>
+
+<h2>5. The surprise: Haiku is the slow one</h2>
+
+<p>I expected Haiku to be less accurate. I did not expect it to be slow. On the short-command task, median latency:</p>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr><th>Model</th><th>v3 median latency</th><th>v3 median cost/run</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Sonnet 5</td><td>12.8 s</td><td>$0.0247</td></tr>
+      <tr><td>Haiku 4.5</td><td>80.9 s</td><td>$0.0455</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p>Read that twice. Haiku, the model whose entire brand is fast and cheap, was six times slower than Sonnet 5 and cost more per run, on the same tasks. It's priced at a third of Sonnet's per-token rate, yet it cost more, which means it generated far more tokens.</p>
+
+<div class="insight">
+  <p>The cause is adaptive thinking. Haiku 4.5 burns an enormous thinking budget on these problems, which makes it slow and cancels its price advantage at the same time. On this workload the fast, cheap model was neither.</p>
+</div>
+
+<figure class="chart">
+  <img src="/blog/one-shot-code-review-benchmark/chart-2.png" alt="Grouped bar chart of median latency per task. Haiku 4.5 is the slowest model on v1, v3, and v4, often by a wide margin, while Sonnet 5 is consistently the fastest.">
+  <figcaption>Median latency by task. Haiku 4.5 is the slowest model on three of four tasks. Sonnet 5 is consistently fastest.</figcaption>
+</figure>
+
+<p>If you reach for Haiku to save latency and money on anything that needs real reasoning, measure it first. You might be paying more for less.</p>
+
+<h2>6. Limitations</h2>
+
+<p>I want to be honest about what this is. Every number is directional. Small n, one machine, one afternoon of API weather. The review accuracy rests on LLM judges scoring against a rubric another LLM wrote, so I mitigate with two judges from different labs and blind shuffling, and I don't pretend to eliminate the bias. The review scores here are single-trial per model. The command tasks are mechanically scored, which I trust more, but they saturate for frontier models, so they discriminate on precision rather than raw capability. Don't read a 2-point review gap as a law of nature. Read it as a signal worth a bigger run.</p>
+
+<h2>7. What I'd keep</h2>
+
+<p>The method held up better than any single result, so that's what I'd carry forward:</p>
+
+<ol>
+  <li>Score restraint. Once recall saturates, the traps are what separate models.</li>
+  <li>Don't report a speed winner at small n. A timeout measures the weather.</li>
+  <li>Enforce your constraints in code. "One shot" has to be disabled tools plus a turn-count check, not a line in the prompt.</li>
+  <li>Use strong models as difficulty oracles, and accept that they mostly can't stump each other.</li>
+  <li>"Fast and cheap" is a claim about a workload, not a model. Haiku's thinking budget made it the slowest here.</li>
+</ol>
+
+<p>Next I want to run the discriminating tasks at proper n, on a quiet machine, with latency measured over ten trials instead of guessed from three. The harness is built for it now. If you want to poke at it or add your own model, it's all on <a href="https://github.com/MarcinDudekDev/llm-review-bench">GitHub</a>.</p>

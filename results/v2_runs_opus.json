@@ -1,0 +1,102 @@
+[
+  {
+    "elapsed_s": 190.99,
+    "timed_out": false,
+    "cost_usd": 0.3039105,
+    "output": "```\nFINDINGS:\nA:8 \u2014 get_event_loop() with no running loop raises RuntimeError in 3.14\nA:36 \u2014 render_card output contains newlines, breaking SSE data field framing\nA:49 \u2014 TaskGroup wraps in ExceptionGroup; bare except ValueError won't catch it\nB:5 \u2014 Left-associative nested ternary; score>80 returns 'ok' instead of 'fast'\nB:11 \u2014 $defaults + $user_args keeps defaults; user args never override\nB:16 \u2014 wp_verify_nonce returns 1|2|false, never true; === true always fails\nB:27 \u2014 usort comparator uses > (bool) not <=> (int); sort is incorrect\nC:7 \u2014 BSD date has no -d flag; macOS requires date -v-1d\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```",
+    "error": null,
+    "trial": 1,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)"
+  },
+  {
+    "elapsed_s": 162.58,
+    "timed_out": false,
+    "cost_usd": 0.39370900000000003,
+    "output": "FINDINGS:\nA:35 \u2014 Datastar 1.0 renamed event to datastar-patch-elements; merge-fragments unrecognized\nA:36 \u2014 literal newlines in HTML break SSE `data:` framing, fragment truncated\nA:49 \u2014 TaskGroup raises ExceptionGroup, not ValueError; except never catches, no reset\nB:5 \u2014 unparenthesized nested ternary is a fatal compile error on PHP 8.0+\nB:11 \u2014 `$defaults + $user_args` keeps defaults; user args never override\nB:16 \u2014 wp_verify_nonce returns 1/2, never true; `=== true` rejects valid nonce\nB:27 \u2014 comparator returns bool not int spaceship; ordering invalid/incorrect\nC:6 \u2014 zsh arrays are 1-indexed; `$files[0]` is empty, cp then fails\nC:7 \u2014 BSD date has no `-d`; `date -d '-1 day'` errors, set -e exits\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5",
+    "error": null,
+    "trial": 1,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)"
+  },
+  {
+    "elapsed_s": 207.06,
+    "timed_out": false,
+    "cost_usd": 0.26849999999999996,
+    "output": "```\nFINDINGS:\nA:36 \u2014 Multi-line HTML in single data: field breaks SSE framing\nA:49 \u2014 except ValueError cannot catch ExceptionGroup raised by TaskGroup\nB:5 \u2014 Unparenthesized nested ternary is fatal error in PHP 8.0+\nB:11 \u2014 $defaults + $user_args discards user overrides for existing default keys\nB:16 \u2014 wp_verify_nonce returns 1|2 on success, never true; === true always fails\nB:27 \u2014 Comparator returns bool not int; usort requires spaceship operator\nC:6 \u2014 zsh arrays are 1-indexed; $files[0] yields empty string\nC:7 \u2014 BSD date lacks -d flag; macOS requires -v-1d syntax\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```",
+    "error": null,
+    "trial": 2,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)"
+  },
+  {
+    "elapsed_s": 223.2,
+    "timed_out": false,
+    "cost_usd": 0.409676,
+    "output": "FINDINGS:\nA:35 \u2014 Datastar 1.0 event is `datastar-patch-elements`; `merge-fragments` is ignored by client\nA:36 \u2014 HTML holds raw `\\n`; unprefixed lines break the SSE `data:` frame\nA:49 \u2014 TaskGroup raises ExceptionGroup, so `except ValueError` never catches; error escapes\nB:5 \u2014 unparenthesized nested ternary is a fatal compile error on PHP 8\nB:11 \u2014 `$defaults + $user_args` gives defaults priority; user-submitted values dropped\nB:16 \u2014 wp_verify_nonce returns int 1/2; `=== true` is always false, valid nonce dies\nC:6 \u2014 zsh arrays are 1-indexed; `$files[0]` is empty, cp gets no source\nC:7 \u2014 stock BSD `date` has no `-d`; command fails and set -e aborts\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5",
+    "error": null,
+    "trial": 2,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)"
+  },
+  {
+    "elapsed_s": 225.56,
+    "timed_out": false,
+    "cost_usd": 0.29535,
+    "output": "```\nFINDINGS:\nA:36 \u2014 Multiline HTML (from render_card) in single data: field breaks SSE framing\nA:49 \u2014 except ValueError cannot catch ExceptionGroup raised by TaskGroup\nB:5 \u2014 Nested ternary without parentheses is a Fatal Error in PHP 8.0+\nB:11 \u2014 $defaults + $user_args gives defaults priority, ignores user overrides\nB:16 \u2014 wp_verify_nonce returns 1|2 not true; strict === true always fails\nB:27 \u2014 usort comparator returns bool not int; sort is incorrect\nC:6 \u2014 zsh arrays are 1-indexed; $files[0] yields empty string\nC:7 \u2014 BSD date has no -d flag; macOS requires -v for date arithmetic\nC:9 \u2014 Unquoted $dest containing space causes word splitting in mkdir and cp\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```",
+    "error": null,
+    "trial": 3,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)"
+  },
+  {
+    "elapsed_s": 174.01,
+    "timed_out": false,
+    "cost_usd": 0.342101,
+    "output": "```\nFINDINGS:\nA:35 \u2014 Datastar 1.0 event is `datastar-patch-elements`; `datastar-merge-fragments` unrecognized by client\nA:36 \u2014 Datastar 1.0 data key is `elements`, not `fragments`\nA:36 \u2014 embedded newlines in html break single SSE `data:` field, truncating fragment\nA:49 \u2014 TaskGroup raises ExceptionGroup, not ValueError; `except ValueError` never catches, reset skipped\nB:5 \u2014 unparenthesized nested ternary is a fatal compile error in PHP 8\nB:11 \u2014 `$defaults + $user_args` gives defaults precedence; POST values silently ignored\nB:16 \u2014 wp_verify_nonce returns 1|2, never `true`; `=== true` always false, valid nonces rejected\nB:27 \u2014 usort comparator returns bool; `a<b` yields 0 (equal), incorrect sort\nC:6 \u2014 zsh arrays are 1-indexed; `$files[0]` is empty, not first element\nC:7 \u2014 BSD/macOS `date` lacks GNU `-d`; `-d '-1 day'` errors, set -e exits\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```",
+    "error": null,
+    "trial": 3,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)"
+  },
+  {
+    "elapsed_s": 224.03,
+    "timed_out": false,
+    "cost_usd": 0.71985,
+    "output": "```\nFINDINGS:\nA:8 \u2014 asyncio.get_event_loop() with no running loop raises RuntimeError in 3.14\nA:36 \u2014 newlines in HTML break SSE data field; each line needs its own data: prefix\nA:49 \u2014 TaskGroup wraps exception in ExceptionGroup; except ValueError cannot catch it\nB:5 \u2014 nested ternary without parentheses is a fatal error in PHP 8.0+\nB:11 \u2014 $defaults + $user_args keeps defaults; user args never override matching keys\nB:16 \u2014 wp_verify_nonce returns 1 or 2, never boolean true; === true always fails\nB:27 \u2014 usort comparator uses > returning bool 0|1; never negative so sort is wrong\nC:6 \u2014 zsh arrays are 1-indexed; $files[0] yields empty string, not first element\nC:7 \u2014 macOS BSD date lacks -d flag; needs -v-1d instead\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```",
+    "error": null,
+    "trial": 4,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)"
+  },
+  {
+    "elapsed_s": 164.03,
+    "timed_out": false,
+    "cost_usd": 0.314126,
+    "output": "```\nFINDINGS:\nA:35 \u2014 Datastar 1.0 renamed event to datastar-patch-elements; datastar-merge-fragments is ignored by client.\nA:36 \u2014 HTML newlines break SSE framing; continuation lines lack data: prefix, fragment truncated.\nA:49 \u2014 TaskGroup raises ExceptionGroup, not ValueError; except ValueError misses it, exception propagates.\nB:5 \u2014 Unparenthesized nested ternary is a fatal parse error in PHP 8.\nB:11 \u2014 $defaults + $user_args: left operand wins, user values silently ignored.\nB:16 \u2014 wp_verify_nonce returns int 1/2 never true; === true always fails, valid nonce rejected.\nB:27 \u2014 usort callback returns bool, never negative; incorrect/incomplete ordering.\nC:6 \u2014 zsh arrays are 1-indexed; $files[0] is empty, first unset.\nC:7 \u2014 BSD date has no -d flag; invalid option errors, set -e aborts.\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```",
+    "error": null,
+    "trial": 4,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)"
+  },
+  {
+    "elapsed_s": 231.69,
+    "timed_out": false,
+    "cost_usd": 0.301125,
+    "output": "```\nFINDINGS:\nA:8 \u2014 asyncio.get_event_loop() with no running loop raises RuntimeError in 3.14\nA:36 \u2014 multi-line HTML in single data: field breaks SSE framing\nA:49 \u2014 except ValueError cannot catch ExceptionGroup from TaskGroup\nB:5 \u2014 nested ternary without parentheses is a fatal error in PHP 8.0+\nB:11 \u2014 $defaults + $user_args gives defaults priority, ignoring user overrides\nB:16 \u2014 wp_verify_nonce returns 1|2 on success, never true; === true always fails\nB:19 \u2014 wp_die second arg is $title not status code; sends 500 not 403\nB:27 \u2014 usort comparator returns bool not int; $a < $b treated same as equal\nC:6 \u2014 zsh arrays are 1-indexed; $files[0] yields empty string\nC:7 \u2014 BSD date has no -d flag; macOS requires -v-1d\nC:9 \u2014 unquoted $dest with embedded space causes word splitting\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```",
+    "error": null,
+    "trial": 5,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)"
+  },
+  {
+    "elapsed_s": 184.68,
+    "timed_out": false,
+    "cost_usd": 0.6541950000000001,
+    "output": "FINDINGS:\nA:35 \u2014 Datastar 1.0 renamed event to `datastar-patch-elements`; `merge-fragments` is ignored by client\nA:36 \u2014 raw newlines in HTML break SSE data framing; key should be `elements`\nA:49 \u2014 TaskGroup raises ExceptionGroup, not bare ValueError; `except ValueError` never matches\nB:5 \u2014 unparenthesized nested ternary is a fatal compile error in PHP 8\nB:11 \u2014 `$defaults + $user_args` keeps default keys, so user overrides are discarded\nB:16 \u2014 wp_verify_nonce returns 1/2, not `true`; `=== true` rejects valid nonce\nB:27 \u2014 comparator returns bool, never negative, yielding incorrect/inconsistent sort order\nC:6 \u2014 zsh arrays are 1-indexed; `$files[0]` is empty, so `first` is blank\nC:7 \u2014 stock BSD date has no GNU `-d` flag; command fails under `set -e`\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n\nStopped at: \u23f1 2026-07-17 00:00:00",
+    "error": null,
+    "trial": 5,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)"
+  }
+]

@@ -1,0 +1,102 @@
+[
+  {
+    "elapsed_s": 118.41,
+    "timed_out": false,
+    "cost_usd": 0.22788570000000002,
+    "output": "FINDINGS:\nA:36 \u2014 multi-line SSE \"data:\" field lacks per-line prefix, breaks datastar-merge-fragments framing\nA:49 \u2014 TaskGroup wraps ValueError in ExceptionGroup; bare `except ValueError` never matches\nB:5 \u2014 unparenthesized nested ternary is a PHP 8 fatal compile error\nB:11 \u2014 `$defaults + $user_args` keeps defaults on key collision, silently ignoring user overrides\nB:16 \u2014 wp_verify_nonce returns 1/2 not `true`; strict `=== true` rejects all valid nonces\nB:27 \u2014 usort comparator returns bool, coerced to 0/1, produces unreliable sort order\nC:6 \u2014 zsh arrays are 1-indexed; `$files[0]` is empty, not the first match\nC:7 \u2014 stock BSD `date` has no `-d` flag (GNU-only); command fails, script aborts under `set -e`\n\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5",
+    "error": null,
+    "trial": 1,
+    "model_id": "sonnet-5",
+    "label": "Claude Sonnet 5"
+  },
+  {
+    "elapsed_s": 160.86,
+    "timed_out": false,
+    "cost_usd": 0.09144440000000001,
+    "output": "```\nFINDINGS:\nA:22 \u2014 render_card returns HTML with embedded newlines; SSE data field violates wire protocol\nA:36 \u2014 SSE yield of multi-line HTML lacks data: prefix on continuation lines; unparseable\nB:11 \u2014 Array merge $defaults + $user_args reverses precedence; user args always ignored\nB:16 \u2014 wp_verify_nonce() returns 1, not true; === true comparison always fails\nC:6 \u2014 zsh array: [0] is first element, not [1]; should use files[1] for 1-based indexing\nC:7 \u2014 macOS BSD date lacks -d flag; use date -v-1d for relative dates\n\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nS2-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```\n\nStopped at: \u23f1 2026-07-17 11:15:43",
+    "error": null,
+    "trial": 1,
+    "model_id": "haiku-4-5",
+    "label": "Claude Haiku 4.5"
+  },
+  {
+    "elapsed_s": 114.81,
+    "timed_out": false,
+    "cost_usd": 0.1716048,
+    "output": "FINDINGS:\nA:36 \u2014 html contains embedded \\n; SSE requires each line prefixed \"data:\", breaks datastar fragment parsing\nA:49 \u2014 TaskGroup wraps exceptions in ExceptionGroup; bare `except ValueError` never matches, propagates uncaught\nB:5 \u2014 unparenthesized nested ternary is a fatal parse error in PHP 8\nB:11 \u2014 `$defaults + $user_args` keeps left-array values, so user-supplied settings never override defaults\nB:16 \u2014 wp_verify_nonce returns 1/2/false, never `true`; `=== true` always fails, valid nonces rejected\nB:27 \u2014 usort comparator returns bool (0/1), never negative; sort order broken\nC:7 \u2014 stock BSD `/bin/date` has no `-d` flag (GNU-only); command errors under `set -e`\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5",
+    "error": null,
+    "trial": 2,
+    "model_id": "sonnet-5",
+    "label": "Claude Sonnet 5"
+  },
+  {
+    "elapsed_s": 153.01,
+    "timed_out": false,
+    "cost_usd": 0.0883866,
+    "output": "```\nFINDINGS:\nA:22 \u2014 f-string quotes: double-quote delimiter with nested double-quote in {item[\"id\"]}, SyntaxError\nA:46-50 \u2014 TaskGroup wraps task ValueError in ExceptionGroup; except ValueError never matches\nB:16 \u2014 wp_verify_nonce returns 1 or 2, never boolean true; check always fails silently\nB:27 \u2014 usort callback returns boolean (0/1), not -1/0/1; only handles equal or greater, not less\nC:7 \u2014 date -d does not exist on BSD/macOS; use date -v-1d for relative dates\nC:9 \u2014 mkdir -p $dest unquoted; $dest contains space (\"wp $stamp\"), creates wrong dirs\n\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nS2-in\nS1-out\nCB1\nM3\nC2\nM4 True\nM5\n```\n\nStopped at: \u23f1 2026-07-17 14:32:18",
+    "error": null,
+    "trial": 2,
+    "model_id": "haiku-4-5",
+    "label": "Claude Haiku 4.5"
+  },
+  {
+    "elapsed_s": 133.65,
+    "timed_out": false,
+    "cost_usd": 0.2318775,
+    "output": "FINDINGS:\nA:35 \u2014 Datastar 1.0 event renamed to \"datastar-patch-elements\"; \"datastar-merge-fragments\" is pre-1.0\nA:36 \u2014 data key must be \"elements\" not \"fragments\" in Datastar 1.0; also raw newlines in html break SSE data field\nA:49 \u2014 TaskGroup wraps ValueError in ExceptionGroup; bare `except ValueError` never catches it\nB:5 \u2014 unparenthesized nested ternary is a fatal compile error in PHP 8\nB:11 \u2014 array union `+` keeps left operand's value on key clash, so $user_args never overrides defaults\nB:16 \u2014 wp_verify_nonce returns 1/2/false, never `true`; `=== true` always fails, rejecting valid nonces\nB:27 \u2014 usort comparator returns bool (0/1), never negative; cannot express \"less than\", sort is broken\nC:6 \u2014 zsh arrays are 1-indexed; $files[0] is empty, not the first match\nC:7 \u2014 stock BSD `/bin/date` has no `-d` flag (GNU-only); command errors, `set -e` aborts script\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5",
+    "error": null,
+    "trial": 3,
+    "model_id": "sonnet-5",
+    "label": "Claude Sonnet 5"
+  },
+  {
+    "elapsed_s": 140.66,
+    "timed_out": false,
+    "cost_usd": 0.0757097,
+    "output": "```\nFINDINGS:\nA:22 \u2014 F-string with unescaped nested double quotes; syntax error\nB:11 \u2014 Array + operator order reversed; defaults override user_args instead of merging\nB:16 \u2014 wp_verify_nonce returns 1 not true; === strict comparison will always fail\nB:27 \u2014 usort callback returns 0/1 not -1/0/1; comparison semantics broken\nC:7 \u2014 BSD date lacks -d flag; use -v-1d format for macOS instead\nC:9 \u2014 Unquoted mkdir variable contains space; creates two directories instead of one\n\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nS2-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```\n\nStopped at: \u23f1 2026-07-17 06:48:42",
+    "error": null,
+    "trial": 3,
+    "model_id": "haiku-4-5",
+    "label": "Claude Haiku 4.5"
+  },
+  {
+    "elapsed_s": 99.6,
+    "timed_out": false,
+    "cost_usd": 0.16187160000000003,
+    "output": "FINDINGS:\nA:36 \u2014 SSE data field spans multiple lines without per-line \"data:\" prefix, breaks protocol\nA:49 \u2014 TaskGroup wraps ValueError in ExceptionGroup; bare except ValueError never catches it\nB:5 \u2014 Unparenthesized nested ternary is a fatal compile error in PHP 8\nB:11 \u2014 Array union `+` keeps left operand's keys; defaults override user_args, not reverse\nB:16 \u2014 wp_verify_nonce returns int 1/2 not true; strict === true always fails\nB:27 \u2014 usort comparator returns bool not int; sort order incorrect/undefined\nC:6 \u2014 zsh arrays are 1-indexed; $files[0] is out-of-range, yields empty string\nC:7 \u2014 macOS stock BSD date has no -d flag; GNU-only syntax errors\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5",
+    "error": null,
+    "trial": 4,
+    "model_id": "sonnet-5",
+    "label": "Claude Sonnet 5"
+  },
+  {
+    "elapsed_s": 161.99,
+    "timed_out": false,
+    "cost_usd": 0.0777604,
+    "output": "```\nFINDINGS:\nA:22 \u2014 f-string with nested double quotes: outer delim and item[\"key\"] both use double quotes\nA:49 \u2014 TaskGroup raises ExceptionGroup, not ValueError; handler misses wrapped exceptions\nB:16 \u2014 wp_verify_nonce returns int 1, strict comparison === true always fails\nB:27 \u2014 sort callback returns bool true/false (1/0), never returns negative values for sort\nC:6 \u2014 zsh arrays are 1-indexed; index 0 is invalid, should be $files[1]\nC:7 \u2014 macOS BSD date lacks -d flag; use -v-1d for \"one day ago\"\nC:9 \u2014 unquoted $dest with embedded space causes word splitting in mkdir\nC:11 \u2014 unquoted $first and $dest cause word splitting in cp, incorrect target\n\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```\n\nStopped at: \u23f1 2026-07-17 14:32:18",
+    "error": null,
+    "trial": 4,
+    "model_id": "haiku-4-5",
+    "label": "Claude Haiku 4.5"
+  },
+  {
+    "elapsed_s": 86.46,
+    "timed_out": false,
+    "cost_usd": 0.1341216,
+    "output": "FINDINGS:\nA:36 \u2014 SSE `data:` line embeds raw `\\n` from html, breaking event-stream framing\nA:49 \u2014 TaskGroup wraps ValueError in ExceptionGroup; `except ValueError` never catches it\nB:5 \u2014 Unparenthesized nested ternary is a fatal compile error on PHP 8.3\nB:11 \u2014 `$defaults + $user_args` keeps defaults' values, silently discarding user overrides\nB:16 \u2014 wp_verify_nonce returns int 1/2 (never bool true); `=== true` always fails, rejects valid nonces\nB:27 \u2014 usort comparator returns bool not int; violates ordering contract, sort result undefined\nC:6 \u2014 zsh arrays are 1-indexed; `$files[0]` is empty, not the first match\nC:7 \u2014 macOS/BSD `date` has no `-d` flag (GNU-only); command errors under `set -e`\n\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5",
+    "error": null,
+    "trial": 5,
+    "model_id": "sonnet-5",
+    "label": "Claude Sonnet 5"
+  },
+  {
+    "elapsed_s": 110.42,
+    "timed_out": false,
+    "cost_usd": 0.10875100000000001,
+    "output": "```\nFINDINGS:\nA:22 \u2014 f-string contains unescaped quote: item[\"id\"] breaks delimiter\nA:49 \u2014 TaskGroup raises ExceptionGroup; except ValueError never triggered\nB:11 \u2014 Array union reversed: $defaults + $user_args keeps defaults, not user args\nB:16 \u2014 wp_verify_nonce returns int (1, 2), not true; condition always false\nB:27 \u2014 usort comparator returns boolean (0/1), not signed int; sorts incorrectly\nC:7 \u2014 macOS date lacks -d flag; use -v-1d (BSD syntax)\nC:9 \u2014 Unquoted $dest with embedded space breaks mkdir into two dirs\n\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nS2-in\nS1-out\nCB1\nM3\nC2\nM4 True\nM5\n```\n\nStopped at: \u23f1 2026-07-17 17:15:32",
+    "error": null,
+    "trial": 5,
+    "model_id": "haiku-4-5",
+    "label": "Claude Haiku 4.5"
+  }
+]

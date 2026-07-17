@@ -1,0 +1,120 @@
+{
+  "models": [
+    "opus-4-6",
+    "opus-4-8",
+    "sonnet-5",
+    "haiku-4-5"
+  ],
+  "labels": {
+    "opus-4-6": "Opus 4.6",
+    "opus-4-8": "Opus 4.8",
+    "sonnet-5": "Sonnet 5",
+    "haiku-4-5": "Haiku 4.5"
+  },
+  "tasks": {
+    "v1": {
+      "opus-4-6": {
+        "accuracy_pct": 80.0,
+        "raw": "8.0/10 (judged)",
+        "latency_median_s": 46.7,
+        "cost_median_usd": 0.0687
+      },
+      "opus-4-8": {
+        "accuracy_pct": 70.0,
+        "raw": "7.0/10 (judged)",
+        "latency_median_s": 24.7,
+        "cost_median_usd": 0.0787
+      },
+      "sonnet-5": {
+        "accuracy_pct": 80.0,
+        "raw": "8.0/10 (judged)",
+        "latency_median_s": 10.6,
+        "cost_median_usd": 0.0812
+      },
+      "haiku-4-5": {
+        "accuracy_pct": 55.0,
+        "raw": "5.5/10 (judged)",
+        "latency_median_s": 112.2,
+        "cost_median_usd": 0.0658
+      }
+    },
+    "v2": {
+      "opus-4-6": {
+        "accuracy_pct": 82.0,
+        "raw": "8.2/10 (judged)",
+        "latency_median_s": 224.0,
+        "cost_median_usd": 0.3011
+      },
+      "opus-4-8": {
+        "accuracy_pct": 94.0,
+        "raw": "9.4/10 (judged)",
+        "latency_median_s": 174.0,
+        "cost_median_usd": 0.3937
+      },
+      "sonnet-5": {
+        "accuracy_pct": 88.0,
+        "raw": "8.8/10 (judged)",
+        "latency_median_s": 114.8,
+        "cost_median_usd": 0.1716
+      },
+      "haiku-4-5": {
+        "accuracy_pct": 65.0,
+        "raw": "6.5/10 (judged)",
+        "latency_median_s": 153.0,
+        "cost_median_usd": 0.0884
+      }
+    },
+    "v3": {
+      "opus-4-6": {
+        "accuracy_pct": 100.0,
+        "raw": "50/50",
+        "latency_median_s": 17.8,
+        "cost_median_usd": 0.0357
+      },
+      "opus-4-8": {
+        "accuracy_pct": 100.0,
+        "raw": "50/50",
+        "latency_median_s": 22.4,
+        "cost_median_usd": 0.0542
+      },
+      "sonnet-5": {
+        "accuracy_pct": 100.0,
+        "raw": "100/100",
+        "latency_median_s": 12.8,
+        "cost_median_usd": 0.0247
+      },
+      "haiku-4-5": {
+        "accuracy_pct": 93.0,
+        "raw": "93/100",
+        "latency_median_s": 80.9,
+        "cost_median_usd": 0.0455
+      }
+    },
+    "v4": {
+      "opus-4-6": {
+        "accuracy_pct": 100.0,
+        "raw": "180/180",
+        "latency_median_s": 142.5,
+        "cost_median_usd": 0.2218
+      },
+      "opus-4-8": {
+        "accuracy_pct": 99.4,
+        "raw": "179/180",
+        "latency_median_s": 124.2,
+        "cost_median_usd": 0.2556
+      },
+      "sonnet-5": {
+        "accuracy_pct": 99.4,
+        "raw": "179/180",
+        "latency_median_s": 92.5,
+        "cost_median_usd": 0.1772
+      },
+      "haiku-4-5": {
+        "accuracy_pct": 67.8,
+        "raw": "122/180",
+        "latency_median_s": 193.0,
+        "cost_median_usd": 0.115
+      }
+    }
+  }
+}

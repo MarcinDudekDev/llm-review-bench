@@ -1,0 +1,102 @@
+[
+  {
+    "elapsed_s": 9.15,
+    "timed_out": false,
+    "cost_usd": 0.23106600000000002,
+    "output": "1. L12: `@lru_cache` on an async function caches the coroutine object itself, not its result, so a second call to an already-cached slug returns an already-awaited/exhausted coroutine and raises `RuntimeError: cannot reuse already awaited coroutine`.\n2. L30-32: Mutating `_cache` with `del` while iterating over it directly (not a copy of keys) raises `RuntimeError: dictionary changed size during iteration`.\n3. L36: Mutable default argument `extra: dict = {}` is shared across calls, so `Cache-Control` (and any other injected headers) leaks/accumulates across unrelated requests.\n4. L53: SSE data payload embeds a raw Python dict via f-string (`{data}`) instead of JSON-serializing it, producing invalid/non-JSON `data:` content that violates the `datastar-patch-signals` protocol and breaks client-side parsing.\n5. L53: The SSE message is missing the required trailing blank line (`\\n\\n`) after `data:`, so the event is not properly terminated per the SSE spec and may not be flushed/parsed correctly.\n\nStopped at: \u23f1 2026-07-17 14:32:07",
+    "error": null,
+    "trial": 1,
+    "model_id": "sonnet-5",
+    "label": "Claude Sonnet 5"
+  },
+  {
+    "elapsed_s": 112.24,
+    "timed_out": false,
+    "cost_usd": 0.07372519999999999,
+    "output": "L12: @lru_cache on async function; cached coroutine cannot be awaited twice.\nL30: Dictionary modified with del during iteration raises RuntimeError.\nL53: SSE event format missing final blank line between events (should end with \\n\\n).",
+    "error": null,
+    "trial": 1,
+    "model_id": "haiku-4-5",
+    "label": "Claude Haiku 4.5"
+  },
+  {
+    "elapsed_s": 8.98,
+    "timed_out": false,
+    "cost_usd": 0.015670499999999997,
+    "output": "1: L12: `@lru_cache` wraps an async function, so it caches unawaited coroutine objects, causing all subsequent calls for the same slug to reuse/await an already-consumed coroutine and raise a RuntimeError.\n2: L30: Mutating `_cache` with `del` while iterating over it in the same `for` loop raises `RuntimeError: dictionary changed size during iteration`.\n3: L36: Mutable default argument `extra: dict = {}` is shared across calls, so `Cache-Control` headers accumulate/persist state across requests.\n4: L53: SSE data payload is missing the required blank line (`\\n\\n`) terminator, so the event is never flushed/parsed correctly by the client.\n5: L53: The signals value is embedded via Python dict `str()` formatting (single quotes, not JSON), producing invalid JSON that Datastar cannot parse.",
+    "error": null,
+    "trial": 2,
+    "model_id": "sonnet-5",
+    "label": "Claude Sonnet 5"
+  },
+  {
+    "elapsed_s": 113.21,
+    "timed_out": false,
+    "cost_usd": 0.0657897,
+    "output": "L12: @lru_cache decorator does not work correctly with async functions; coroutine objects are cached instead of their results, and re-awaiting the same coroutine fails.\nL30: Dictionary modification during iteration via `.items()` raises RuntimeError when `del _cache[slug]` is executed.\nL36: Mutable default argument `{}` is shared across all calls to `make_headers()` without an explicit `extra` parameter, causing unintended state persistence.\nL53: SSE format is incomplete; events must terminate with a blank line (`\\n\\n`), but this yields only a single trailing newline.\nL53: Data payload is stringified dict object (e.g., `{'slug': '...'}`) instead of JSON-serialized, violating SSE data format expectations for Datastar.",
+    "error": null,
+    "trial": 2,
+    "model_id": "haiku-4-5",
+    "label": "Claude Haiku 4.5"
+  },
+  {
+    "elapsed_s": 10.55,
+    "timed_out": false,
+    "cost_usd": 0.23298,
+    "output": "1. L12: `@lru_cache` wraps an async function, so it caches unresolved coroutine objects and awaiting the same cached coroutine a second time raises `RuntimeError: cannot reuse already awaited coroutine`.\n2. L13: `fetch_score` is never invalidated/removed from the `lru_cache`, so it always returns the same stale result for a given slug forever, defeating the TTL cache logic in `get_cached`.\n3. L30-32: mutating `_cache` (`del _cache[slug]`) while iterating over it with `for slug, ... in _cache.items()` raises `RuntimeError: dictionary changed size during iteration`.\n4. L36: mutable default argument `extra: dict = {}` is shared across calls, so `Cache-Control` accumulates into the same dict object and any caller-supplied dict is polluted across requests.\n5. L53: SSE data payload isn't valid \u2014 Datastar's `datastar-patch-signals` event expects `data: signals {json}` with a properly JSON-serialized object, but `data` is a Python dict interpolated via f-string (e.g. single quotes, `True`/`None`), which is not valid JSON and will fail client-side parsing.\n6. L53: the SSE message is missing the required trailing blank line (`\\n\\n`) to terminate the event per the SSE spec, so events will not be dispatched correctly (may get buffered/concatenated).",
+    "error": null,
+    "trial": 3,
+    "model_id": "sonnet-5",
+    "label": "Claude Sonnet 5"
+  },
+  {
+    "elapsed_s": 108.67,
+    "timed_out": false,
+    "cost_usd": 0.0646347,
+    "output": "L12: @lru_cache on async function caches coroutine objects, not results.\nL30: Dictionary modified during iteration (del) causes RuntimeError.\nL53: SSE data field contains Python dict repr instead of JSON.\nL53: SSE event missing blank line terminator (needs \\n\\n not \\n).",
+    "error": null,
+    "trial": 3,
+    "model_id": "haiku-4-5",
+    "label": "Claude Haiku 4.5"
+  },
+  {
+    "elapsed_s": 28.93,
+    "timed_out": false,
+    "cost_usd": 0.08120549999999999,
+    "output": "1. L12: `@lru_cache` on an async function caches the coroutine object itself, so a cache hit returns an already-created coroutine that raises `RuntimeError: cannot reuse already awaited coroutine` when awaited a second time.\n2. L30: Iterating over `_cache.items()` while deleting keys from `_cache` inside the loop raises `RuntimeError: dictionary changed size during iteration`.\n3. L42: `asyncio.create_task(...)` result is discarded without keeping a reference, so the task can be garbage-collected mid-execution and silently dropped.\n4. L53: The SSE message is missing the required trailing blank line (`\\n\\n`), so the event is never properly terminated/flushed per the SSE protocol.\n5. L53: The payload is built with Python's dict `str()`/f-string formatting (single-quoted, non-JSON) instead of `json.dumps`, producing invalid JSON that Datastar's `datastar-patch-signals` cannot parse.\n\nStopped at: \u23f1 2026-07-17 14:32:07",
+    "error": null,
+    "trial": 4,
+    "model_id": "sonnet-5",
+    "label": "Claude Sonnet 5"
+  },
+  {
+    "elapsed_s": 106.69,
+    "timed_out": false,
+    "cost_usd": 0.0646844,
+    "output": "L12: `@lru_cache` on async function caches the coroutine object itself, not the result, causing \"cannot reuse already awaited coroutine\" on second call with same arguments.\nL27: `purge_expired()` accesses `_cache` without acquiring `_lock`, creating race conditions with concurrent `get_cached()` modifications.\nL30: Deleting from `_cache` during iteration over `_cache.items()` raises RuntimeError: dictionary changed size during iteration.\nL53: SSE format missing blank line after data field; should end with `\\n\\n` not `\\n` to properly delimit events.",
+    "error": null,
+    "trial": 4,
+    "model_id": "haiku-4-5",
+    "label": "Claude Haiku 4.5"
+  },
+  {
+    "elapsed_s": 10.8,
+    "timed_out": false,
+    "cost_usd": 0.018355499999999997,
+    "output": "1. L12: `@lru_cache` on an async function caches the coroutine object itself, not its result, so a second call to an already-cached slug returns an already-awaited/exhausted coroutine and raises `RuntimeError: cannot reuse already awaited coroutine`.\n2. L30-32: Mutating `_cache` (via `del`) while iterating over it in the `for` loop raises `RuntimeError: dictionary changed size during iteration`.\n3. L36: Mutable default argument `extra: dict = {}` is shared across calls, so `Cache-Control` accumulates into a persistent dict and mutations leak between requests.\n4. L53: SSE `data:` line is not terminated with a blank line (`\\n\\n`), so the event is not properly flushed/delimited per the SSE protocol, and the frame will never dispatch (or will merge with the next one).\n5. L53: `data` (a Python dict) is interpolated via f-string into `signals {data}`, producing Python dict repr (single quotes) rather than valid JSON, which Datastar's `datastar-patch-signals` handler cannot parse.\n6. L21: `TTL` comparison uses strict `<`, while `purge_expired` (L31) uses strict `>`, leaving an inconsistent boundary window where an entry at exactly `TTL` age is neither a cache hit nor purged.\n\nStopped at: \u23f1 2026-07-17 14:32:07",
+    "error": null,
+    "trial": 5,
+    "model_id": "sonnet-5",
+    "label": "Claude Sonnet 5"
+  },
+  {
+    "elapsed_s": 151.49,
+    "timed_out": false,
+    "cost_usd": 0.097712,
+    "output": "L12: `@lru_cache` on async function caches coroutine objects instead of results; second await fails\nL30: Dictionary modified during iteration raises `RuntimeError: dictionary changed size during iteration`\nL36: Mutable default argument causes the same dict to be reused and mutated across all function calls\nL53: Missing blank line in SSE message format; should end with `\\n\\n` to properly separate messages",
+    "error": null,
+    "trial": 5,
+    "model_id": "haiku-4-5",
+    "label": "Claude Haiku 4.5"
+  }
+]

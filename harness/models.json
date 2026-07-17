@@ -20,6 +20,18 @@
       "label": "Claude Fable 5"
     },
     {
+      "id": "sonnet-5",
+      "adapter": "claude_cli",
+      "model": "claude-sonnet-5",
+      "label": "Claude Sonnet 5"
+    },
+    {
+      "id": "haiku-4-5",
+      "adapter": "claude_cli",
+      "model": "claude-haiku-4-5",
+      "label": "Claude Haiku 4.5"
+    },
+    {
       "id": "grok",
       "adapter": "grok_cli",
       "model": "default",
