@@ -1,0 +1,56 @@
+[
+  {
+    "trial": 0,
+    "model_id": "opus-4-6",
+    "phase": "capped_60s",
+    "elapsed_s": 60.0,
+    "timed_out": true,
+    "cost_usd": null,
+    "output": ""
+  },
+  {
+    "trial": 0,
+    "model_id": "opus-4-8",
+    "phase": "capped_60s",
+    "elapsed_s": 27.75,
+    "timed_out": false,
+    "cost_usd": 0.2769595,
+    "output": "1. L12: `lru_cache` wraps the coroutine function, caching the coroutine object itself, so a second call for the same slug returns an already-awaited coroutine and raises `RuntimeError: cannot reuse already awaited coroutine`.\n2. L23: `await fetch_score(...)` is performed while holding `_lock`, serializing all upstream calls across every slug and blocking the whole cache for the duration of each fetch.\n3. L30: mutating `_cache` with `del` while iterating `.items()` raises `RuntimeError: dictionary changed size during iteration`.\n4. L30: `purge_expired` touches `_cache` without acquiring `_lock`, racing with `get_cached`'s locked read-modify-write.\n5. L36: the mutable default `extra={}` is shared across calls and permanently mutated, so keys leak between invocations.\n6. L42: the task from `asyncio.create_task` is not retained anywhere, so it can be garbage-collected mid-run and its exceptions are silently swallowed.\n7. L53: the SSE frame is missing the terminating blank line \u2014 each event needs `\\n\\n` \u2014 so the client never dispatches the event.\n8. L53: `data` is interpolated with Python `repr` of a dict (single-quoted keys), which is not valid JSON for Datastar's `datastar-patch-signals` payload.\n\nStopped at: \u23f1 2026-07-17 14:32:10"
+  },
+  {
+    "trial": 1,
+    "model_id": "opus-4-6",
+    "phase": "uncapped",
+    "elapsed_s": 47.99,
+    "timed_out": false,
+    "cost_usd": 0.0689485,
+    "output": "1. L12: `lru_cache` on an async function caches the coroutine object; the second call with the same slug awaits an already-consumed coroutine, raising `RuntimeError`\n2. L30-32: Deleting keys from `_cache` while iterating over `.items()` raises `RuntimeError: dictionary changed size during iteration`\n3. L36: Mutable default argument `{}` is shared across all calls, so `Cache-Control` is written into the same dict object and prior callers' headers can be mutated\n4. L42: `create_task` result is not stored, so the task may be garbage-collected before completion\n5. L53: SSE event is missing the required trailing blank line (`\\n\\n`), so the client never sees a complete event\n6. L53: `data` is a Python dict interpolated via f-string, producing Python repr (single quotes, no JSON), not the JSON that Datastar expects"
+  },
+  {
+    "trial": 1,
+    "model_id": "opus-4-8",
+    "phase": "uncapped",
+    "elapsed_s": 132.47,
+    "timed_out": false,
+    "cost_usd": 0.031962,
+    "output": "1. L12: `lru_cache` on an async function caches the coroutine object, so a second call for the same slug re-awaits an already-consumed coroutine and raises `RuntimeError: cannot reuse already awaited coroutine`.\n2. L23: `await fetch_score(...)` is called while holding `_lock`, serializing all upstream calls across all slugs and blocking every other cache reader for the duration.\n3. L30: mutating `_cache` with `del` while iterating `_cache.items()` raises `RuntimeError: dictionary changed size during iteration`.\n4. L30: `purge_expired` reads and mutates `_cache` without acquiring `_lock`, racing with `get_cached`.\n5. L36: mutable default argument `extra={}` is shared across calls, so mutations persist into every subsequent call that omits `extra`.\n6. L42: the task from `asyncio.create_task` is not retained anywhere, so it can be garbage-collected mid-execution and its exceptions are silently swallowed.\n7. L53: the SSE frame is terminated by a single `\\n` instead of the required blank line (`\\n\\n`), so the event is never dispatched to the client.\n8. L53: the signals payload is a Python `dict` repr with single quotes rather than JSON, which Datastar cannot parse as signal data.\n\nStopped at: \u23f1 2026-07-17 14:32:11"
+  },
+  {
+    "trial": 2,
+    "model_id": "opus-4-6",
+    "phase": "uncapped",
+    "elapsed_s": 57.1,
+    "timed_out": false,
+    "cost_usd": 0.2620565,
+    "output": "1. L13: `lru_cache` on an async function caches the coroutine object itself, so the second `await` with a repeated slug raises `RuntimeError: cannot reuse already awaited coroutine`\n2. L30-32: Deleting from `_cache` while iterating over `.items()` raises `RuntimeError: dictionary changed size during iteration`\n3. L36: Mutable default argument `extra: dict = {}` is shared across all calls, so headers from prior invocations persist and leak into subsequent ones\n4. L42: The `Task` returned by `create_task` is not saved to a variable, allowing it to be garbage-collected before completion\n5. L53: SSE protocol requires a blank line (double `\\n`) to terminate each event, but the yield only ends with a single `\\n`\n6. L53: `data` is a Python dict interpolated via f-string (producing single-quoted repr), not serialized to JSON as the Datastar SSE protocol requires"
+  },
+  {
+    "trial": 2,
+    "model_id": "opus-4-8",
+    "phase": "uncapped",
+    "elapsed_s": 27.1,
+    "timed_out": false,
+    "cost_usd": 0.2647915,
+    "output": "1. L12: `lru_cache` on an async function caches the coroutine object, so a second call to the same slug awaits an already-consumed coroutine and raises `RuntimeError: cannot reuse already awaited coroutine`.\n2. L23: The awaited upstream call happens while holding `_lock`, serializing all requests and blocking every other slug's cache access for the duration.\n3. L30: Mutating `_cache` with `del` while iterating `_cache.items()` raises `RuntimeError: dictionary changed size during iteration`.\n4. L30: `purge_expired` mutates `_cache` without acquiring `_lock`, racing with `get_cached`'s read-modify-write.\n5. L36: Mutable default argument `{}` is shared across calls, so header dicts accumulate state between requests.\n6. L42: The task from `asyncio.create_task` isn't stored anywhere, so it can be garbage-collected mid-run and its exceptions are silently discarded.\n7. L53: SSE frame lacks the terminating blank line (needs `\\n\\n`), so the client never dispatches the event.\n8. L53: The payload interpolates a Python dict repr (single quotes) instead of JSON, which Datastar cannot parse as signals.\n\nStopped at: \u23f1 2026-07-17 14:32:11"
+  }
+]

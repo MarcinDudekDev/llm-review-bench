@@ -1,0 +1,72 @@
+{
+  "condition": "one-shot ENFORCED: --tools '' + num_turns==1 asserted",
+  "n_runs_per_cell": 5,
+  "accuracy_note": "v1/v2 judged on trial 1 only (both Fable+Grok agreed); v3 exec-scored across all 5 trials.",
+  "cost_time": {
+    "v1": {
+      "opus-4-6": {
+        "time_median_s": 46.7,
+        "time_mean_s": 46.8,
+        "cost_median_usd": 0.0687,
+        "cost_total_usd": 0.6079
+      },
+      "opus-4-8": {
+        "time_median_s": 24.7,
+        "time_mean_s": 31.6,
+        "cost_median_usd": 0.0787,
+        "cost_total_usd": 0.8915
+      }
+    },
+    "v2": {
+      "opus-4-6": {
+        "time_median_s": 224.0,
+        "time_mean_s": 215.9,
+        "cost_median_usd": 0.3011,
+        "cost_total_usd": 1.8887
+      },
+      "opus-4-8": {
+        "time_median_s": 174.0,
+        "time_mean_s": 181.7,
+        "cost_median_usd": 0.3937,
+        "cost_total_usd": 2.1138
+      }
+    },
+    "v3": {
+      "opus-4-6": {
+        "time_median_s": 17.8,
+        "time_mean_s": 19.5,
+        "cost_median_usd": 0.0357,
+        "cost_total_usd": 0.4876
+      },
+      "opus-4-8": {
+        "time_median_s": 22.4,
+        "time_mean_s": 22.3,
+        "cost_median_usd": 0.0542,
+        "cost_total_usd": 0.3821
+      }
+    }
+  },
+  "accuracy": {
+    "v1_easy_review": {
+      "opus-4-6": 8.0,
+      "opus-4-8": 7.0,
+      "winner": "opus-4-6"
+    },
+    "v2_hard_review": {
+      "opus-4-6": 8.2,
+      "opus-4-8": 9.4,
+      "winner": "opus-4-8"
+    },
+    "v3_commands": {
+      "opus-4-6": "50/50",
+      "opus-4-8": "50/50",
+      "winner": "tie"
+    }
+  },
+  "findings": [
+    "Enforcing one-shot did not change the WINNER direction vs tools-enabled: v1 easy -> 4.6, v2 hard -> 4.8, v3 -> tie. Absolute review scores dropped (no verification), e.g. v1 10/9 -> 8/7.",
+    "Accuracy pattern is coherent on REVIEW tasks: 4.6 better on easy, 4.8 better on hard. Command-gen tied at ceiling.",
+    "Latency is task-TYPE dependent, not cleanly difficulty-dependent: 4.8 faster on both review tasks (v1 25s vs 47s; v2 174s vs 224s) but 4.6 faster on commands (v3 18s vs 22s). No stable 'faster model'.",
+    "Cost per full question-set (median): v1 ~$0.07-0.08, v2 ~$0.30-0.39, v3 ~$0.04-0.05; 4.8 slightly pricier except v3."
+  ]
+}

@@ -1,12 +1,11 @@
 {
   "mapping": {
-    "A": "opus-4-8",
-    "B": "opus-4-6"
+    "A": "opus-4-6",
+    "B": "opus-4-8"
   },
-  "trial": 2,
-  "note": "Blind: judges saw A/B only; mapping withheld until scoring.",
   "verdicts": {
-    "fable-5": "A_SCORE: 9.0/10\nA_FOUND: B1, B2, B3, B4, B5, B6\nA_FALSE_POSITIVES: entry 4 (\"purge_expired mutates _cache without _lock\" \u2014 not in B1-B6; asyncio is single-threaded and purge has no await inside the loop, so no real race; -1.0). Entry 2 = N1 (neutral, no penalty).\nB_SCORE: 10.0/10\nB_FOUND: B1, B2, B3, B4, B5, B6\nB_FALSE_POSITIVES: none\nWINNER: B\nONE_LINE_REASON: Both found all six bugs with correct mechanisms and avoided both traps, but A added an invented lock-race defect (-1.0) while B's list was clean.",
-    "grok": "A_SCORE: 9.0/10\nA_FOUND: B1, B2, B3, B4, B5, B6\nA_FALSE_POSITIVES: L30 race/no-lock on purge_expired (\u22121.0); N1 lock-across-await is neutral\nB_SCORE: 10.0/10\nB_FOUND: B1, B2, B3, B4, B5, B6\nB_FALSE_POSITIVES: none\nWINNER: B\nONE_LINE_REASON: Both hit all six planted bugs and avoided traps; A lost 1.0 for inventing an unplanted purge/lock race."
-  }
+    "fable-5": "A_SCORE: 8/10\nA_FOUND: B1, B5, B6, B2, B3\nA_FALSE_POSITIVES: none\n\nB_SCORE: 7/10\nB_FOUND: B1, B5, B6, B2, B3\nB_FALSE_POSITIVES: L27 \"purge_expired races with get_cached without holding _lock\" \u2014 not in B1\u2013B6 or NEUTRAL (and no await occurs inside purge's loop, so no asyncio interleaving) \u2192 \u22121.0\n\nRANKING: A, B",
+    "grok": "A_SCORE: 8.0/10\nA_FOUND: B1, B2, B3, B5, B6\nA_FALSE_POSITIVES: none\nB_SCORE: 7.0/10\nB_FOUND: B1, B2, B3, B5, B6\nB_FALSE_POSITIVES: L27 race/missing lock on purge_expired (-1.0)\nRANKING: A, B"
+  },
+  "trial": 1
 }

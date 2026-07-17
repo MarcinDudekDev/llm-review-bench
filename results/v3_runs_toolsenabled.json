@@ -1,0 +1,1222 @@
+[
+  {
+    "trial": 1,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)",
+    "elapsed_s": 12.93,
+    "cost_usd": 0.026683,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | wc -l | tr -d ' '",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[] | select(.qty > 25) | .name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "sort a.txt > /tmp/_a.tmp && sort b.txt > /tmp/_b.tmp && comm -12 /tmp/_a.tmp /tmp/_b.tmp",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics; print(statistics.median([7,3,9,12,5,10]))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: '/:/{ print $2 }' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "grep -c '' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 1,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)",
+    "elapsed_s": 23.74,
+    "cost_usd": 0.0623995,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | wc -l | tr -d ' '",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[]|select(.qty>25)|.name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -n 2 steps.txt | head -n 1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "comm -12 <(sort a.txt) <(sort b.txt)",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics;print(statistics.median([int(x) for x in open('scores.txt')]))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: 'NF>1{print $2}' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "awk 'END{print NR}' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 2,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)",
+    "elapsed_s": 13.09,
+    "cost_usd": 0.027258,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | wc -l | tr -d ' '",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[] | select(.qty > 25) | .name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "sort a.txt > /tmp/a_s.txt; sort b.txt > /tmp/b_s.txt; comm -12 /tmp/a_s.txt /tmp/b_s.txt",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics; print(statistics.median([7,3,9,12,5,10]))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: '/:/{ print $2 }' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "python3 -c \"print(sum(1 for _ in open('notes.txt')))\"",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 2,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)",
+    "elapsed_s": 22.13,
+    "cost_usd": 0.0535495,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | wc -l | tr -d ' '",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[] | select(.qty>25) | .name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "comm -12 <(sort a.txt) <(sort b.txt)",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics;print(statistics.median(int(l) for l in open('scores.txt')))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: 'NF>1{print $2}' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "awk 'END{print NR}' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 3,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)",
+    "elapsed_s": 14.26,
+    "cost_usd": 0.2233465,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | wc -l | tr -d ' '",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[] | select(.qty > 25) | .name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "sort a.txt > /tmp/a_sorted.txt && sort b.txt > /tmp/b_sorted.txt && comm -12 /tmp/a_sorted.txt /tmp/b_sorted.txt",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics; print(statistics.median([7,3,9,12,5,10]))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: '/:/{ print $2 }' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "grep -c '' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 3,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)",
+    "elapsed_s": 30.17,
+    "cost_usd": 0.0608745,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "awk '!seen[$0]++{c++}END{print c}' colors.txt",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[]|select(.qty>25).name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -n2 steps.txt | head -n1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "comm -12 <(sort a.txt) <(sort b.txt)",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics;print(statistics.median(int(l) for l in open('scores.txt')))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: 'NF>1{print $2}' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "awk 'END{print NR}' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 4,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)",
+    "elapsed_s": 26.95,
+    "cost_usd": 0.040208,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | wc -l | tr -d ' '",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[] | select(.qty > 25) | .name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "comm -12 <(sort a.txt) <(sort b.txt)",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics; print(statistics.median([7,3,9,12,5,10]))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: '/:/{ print $2 }' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "grep -c '' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 4,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)",
+    "elapsed_s": 29.28,
+    "cost_usd": 0.0547995,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | wc -l | tr -d ' '",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[]|select(.qty>25)|.name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "comm -12 <(sort a.txt) <(sort b.txt)",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c 'import statistics;print(statistics.median([int(x) for x in open(\"scores.txt\")]))'",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: 'NF>1{print $2}' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "awk 'END{print NR}' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 5,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)",
+    "elapsed_s": 17.05,
+    "cost_usd": 0.026683,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | wc -l | tr -d ' '",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[] | select(.qty > 25) | .name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "sort a.txt > /tmp/_a.tmp && sort b.txt > /tmp/_b.tmp && comm -12 /tmp/_a.tmp /tmp/_b.tmp",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics; print(statistics.median([7,3,9,12,5,10]))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: '/:/{ print $2 }' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "grep -c '' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 5,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)",
+    "elapsed_s": 25.36,
+    "cost_usd": 0.0579495,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "awk '!seen[$0]++{c++}END{print c}' colors.txt",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[]|select(.qty>25)|.name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "comm -12 <(sort a.txt) <(sort b.txt)",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics;print(statistics.median(int(l) for l in open('scores.txt')))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: 'NF>1{print $2}' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "awk 'END{print NR}' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 6,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)",
+    "elapsed_s": 22.01,
+    "cost_usd": 0.043983,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | wc -l | tr -d ' '",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[] | select(.qty > 25) | .name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "comm -12 <(sort a.txt) <(sort b.txt)",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics; print(statistics.median([7,3,9,12,5,10]))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "grep ':' users.txt | cut -d: -f2",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "grep -c '' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 6,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)",
+    "elapsed_s": 23.85,
+    "cost_usd": 0.05899950000000001,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | awk 'END{print NR}'",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[]|select(.qty>25)|.name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -n 2 steps.txt | head -n 1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "comm -12 <(sort a.txt) <(sort b.txt)",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics;print(statistics.median(int(l) for l in open('scores.txt')))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: 'NF>1{print $2}' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "awk 'END{print NR}' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 7,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)",
+    "elapsed_s": 16.88,
+    "cost_usd": 0.038683,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | wc -l | tr -d ' '",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[] | select(.qty > 25) | .name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "comm -12 <(sort a.txt) <(sort b.txt)",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics; print(statistics.median([7,3,9,12,5,10]))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: '/:/{ print $2 }' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "awk 'END{print NR}' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 7,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)",
+    "elapsed_s": 29.88,
+    "cost_usd": 0.06164950000000001,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | wc -l | tr -d ' '",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[] | select(.qty>25) | .name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed -E 's/[0-9]+/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "comm -12 <(sort a.txt) <(sort b.txt)",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics;print(statistics.median([int(l) for l in open('scores.txt')]))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "grep ':' users.txt | cut -d: -f2",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "awk 'END{print NR}' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 8,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)",
+    "elapsed_s": 22.94,
+    "cost_usd": 0.23084149999999998,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | wc -l | tr -d ' '",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[] | select(.qty > 25) | .name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "comm -12 <(sort a.txt) <(sort b.txt)",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics; print(statistics.median([7,3,9,12,5,10]))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: '/:/{ print $2 }' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "awk 'END{print NR}' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 8,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)",
+    "elapsed_s": 22.86,
+    "cost_usd": 0.2793215,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "awk '!seen[$0]++{c++}END{print c}' colors.txt",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[]|select(.qty>25)|.name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "comm -12 <(sort a.txt) <(sort b.txt)",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c 'import statistics;print(statistics.median([int(x) for x in open(\"scores.txt\")]))'",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: 'NF>1{print $2}' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "awk 'END{print NR}' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 9,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)",
+    "elapsed_s": 24.99,
+    "cost_usd": 0.026683,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | wc -l | tr -d ' '",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[] | select(.qty > 25) | .name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "sort a.txt > /tmp/_a.tmp && sort b.txt > /tmp/_b.tmp && comm -12 /tmp/_a.tmp /tmp/_b.tmp",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics; print(statistics.median([7,3,9,12,5,10]))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: '/:/{ print $2 }' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "grep -c '' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 9,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)",
+    "elapsed_s": 24.02,
+    "cost_usd": 0.061324500000000004,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | wc -l | tr -d ' '",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[] | select(.qty>25) | .name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "comm -12 <(sort a.txt) <(sort b.txt)",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics;print(statistics.median([int(x) for x in open('scores.txt')]))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: 'NF>1{print $2}' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "awk 'END{print NR}' notes.txt",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 10,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)",
+    "elapsed_s": 10.09,
+    "cost_usd": 0.027058,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | wc -l | tr -d ' '",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[] | select(.qty > 25) | .name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed 's/[0-9][0-9]*/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "sort a.txt > /tmp/_a.tmp && sort b.txt > /tmp/_b.tmp && comm -12 /tmp/_a.tmp /tmp/_b.tmp",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics; print(statistics.median([7,3,9,12,5,10]))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: '/:/{ print $2 }' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "python3 -c \"print(sum(1 for _ in open('notes.txt')))\"",
+        "why": "ok"
+      }
+    }
+  },
+  {
+    "trial": 10,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)",
+    "elapsed_s": 23.21,
+    "cost_usd": 0.061199500000000004,
+    "error": null,
+    "score": 10,
+    "per_q": {
+      "Q1": {
+        "score": 1,
+        "cmd": "awk -F, 'NR>1{s+=$2}END{print s}' sales.csv",
+        "why": "ok"
+      },
+      "Q2": {
+        "score": 1,
+        "cmd": "sort -t- -k2 -n files.txt",
+        "why": "ok"
+      },
+      "Q3": {
+        "score": 1,
+        "cmd": "sort -u colors.txt | awk 'END{print NR}'",
+        "why": "ok"
+      },
+      "Q4": {
+        "score": 1,
+        "cmd": "jq -r '.[]|select(.qty>25)|.name' inventory.json",
+        "why": "ok"
+      },
+      "Q5": {
+        "score": 1,
+        "cmd": "sed -E 's/[0-9]+/#/g' log.txt",
+        "why": "ok"
+      },
+      "Q6": {
+        "score": 1,
+        "cmd": "tail -2 steps.txt | head -1",
+        "why": "ok"
+      },
+      "Q7": {
+        "score": 1,
+        "cmd": "comm -12 <(sort a.txt) <(sort b.txt)",
+        "why": "ok"
+      },
+      "Q8": {
+        "score": 1,
+        "cmd": "python3 -c \"import statistics;print(statistics.median([int(x) for x in open('scores.txt')]))\"",
+        "why": "ok"
+      },
+      "Q9": {
+        "score": 1,
+        "cmd": "awk -F: 'NF>1{print $2}' users.txt",
+        "why": "ok"
+      },
+      "Q10": {
+        "score": 1,
+        "cmd": "awk 'END{print NR}' notes.txt",
+        "why": "ok"
+      }
+    }
+  }
+]

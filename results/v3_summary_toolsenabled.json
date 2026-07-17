@@ -1,0 +1,33 @@
+{
+  "task": "v3",
+  "n_trials": 10,
+  "accuracy": {
+    "opus-4-6": "100/100",
+    "opus-4-8": "100/100"
+  },
+  "latency_s": {
+    "opus-4-6": {
+      "median": 17.0,
+      "mean": 18.1,
+      "sd": 5.5,
+      "min": 10.1,
+      "max": 26.9
+    },
+    "opus-4-8": {
+      "median": 23.9,
+      "mean": 25.4,
+      "sd": 2.9,
+      "min": 22.1,
+      "max": 30.2
+    }
+  },
+  "paired_delta_48_minus_46_s": {
+    "mean": 7.33,
+    "sd": 6.09,
+    "t": 3.8,
+    "p_two_sided_approx": 0.0001,
+    "faster_model": "opus-4-6",
+    "won_trials": "8/10"
+  },
+  "conclusion": "On short deterministic command-gen tasks, opus-4-6 is reliably FASTER (median 17.0s vs 23.9s; paired t~4, p<0.005). This REVERSES the v2 finding (4.8 faster on the HARD task). Latency ranking depends on task difficulty: 4.6 is snappier on easy tasks, 4.8 faster on hard ones (4.6 appears to spend more thinking on hard problems). Accuracy identical (both perfect) so v3 does not discriminate on correctness."
+}

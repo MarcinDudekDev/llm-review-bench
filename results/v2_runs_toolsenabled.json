@@ -1,0 +1,122 @@
+[
+  {
+    "elapsed_s": 300.02,
+    "timed_out": true,
+    "cost_usd": null,
+    "output": "",
+    "error": "TimeoutExpired: Command '['claude', '--model', 'claude-opus-4-6[1m]', '-p', 'You are reviewing code for a stack pinned to exact versions: **Python 3.14 / FastAPI (Starlette 0.50) / Datastar 1.0**, **PHP 8.3+ / WordPress 6.x**, **zsh 5.9 on macOS 15 (stock BSD userland)**. Line numbers are given; refer to them exactly.\\n\\nReport ONLY defects that cause incorrect behavior, an error, or a broken wire protocol **on these exact versions**. Style, robustness, hardening, performance, and \"best practice\" suggestions are NOT findings and will be penalized. Maximum 12 findings.\\n\\n**PART A \u2014 Python 3.14, FastAPI app (served by uvicorn), Datastar 1.0 client on the page**\\n```\\n 1  import asyncio\\n 2  import json\\n 3  import time\\n 4  from fastapi import FastAPI, Request\\n 5  from fastapi.responses import StreamingResponse\\n 6\\n 7  app = FastAPI()\\n 8  loop = asyncio.get_event_loop()\\n 9  METRICS: dict[str, int] = {\"ticks\": 0}\\n10\\n11  def csv_rows():\\n12      yield \"id,name\\\\n\"\\n13      for i in range(3):\\n14          time.sleep(0.1)\\n15          yield f\"{i},row{i}\\\\n\"\\n16\\n17  @app.get(\"/export\")\\n18  def export():\\n19      return StreamingResponse(csv_rows(), media_type=\"text/csv\")\\n20\\n21  def render_card(item: dict) -> str:\\n22      return f\"<article id=\\'card-{item[\"id\"]}\\'>\\\\n  <b>{item[\"name\"]}</b>\\\\n</article>\"\\n23\\n24  async def fetch(key: str) -> str:\\n25      if not key:\\n26          raise ValueError(\"empty key\")\\n27      await asyncio.sleep(0.01)\\n28      return key.upper()\\n29\\n30  async def card_stream(request: Request):\\n31      while not await request.is_disconnected():\\n32          METRICS[\"ticks\"] += 1\\n33          item = {\"id\": METRICS[\"ticks\"], \"name\": f\"tick {METRICS[\\'ticks\\']}\"}\\n34          html = render_card(item)\\n35          yield \"event: datastar-merge-fragments\\\\n\"\\n36          yield f\"data: fragments {html}\\\\n\\\\n\"\\n37          yield \": keepalive\\\\n\\\\n\"\\n38          await asyncio.sleep(1.0)\\n39\\n40  @app.get(\"/stream\")\\n41  async def stream(request: Request):\\n42      return StreamingResponse(card_stream(request), media_type=\"text/event-stream\")\\n43\\n44  async def warm_cache(keys: list[str]) -> None:\\n45      try:\\n46          async with asyncio.TaskGroup() as tg:\\n47              for k in keys:\\n48                  tg.create_task(fetch(k))\\n49      except ValueError:\\n50          METRICS[\"ticks\"] = 0\\n```\\n\\n**PART B \u2014 PHP 8.3, WordPress plugin excerpt (WP APIs behave per official docs)**\\n```\\n 1  <?php\\n 2  const MWF_ALLOWED = [\\'draft\\', \\'publish\\', \\'pending\\'];\\n 3\\n 4  function mwf_render_badge(int $score): string {\\n 5      $label = $score > 80 ? \\'fast\\' : $score > 50 ? \\'ok\\' : \\'slow\\';\\n 6      return \\'<span class=\"badge\">\\' . esc_html($label) . \\'</span>\\';\\n 7  }\\n 8\\n 9  function mwf_settings(array $user_args): array {\\n10      $defaults = [\\'per_page\\' => 10, \\'order\\' => \\'desc\\', \\'cache\\' => true];\\n11      return $defaults + $user_args;\\n12  }\\n13\\n14  function mwf_handle_save() {\\n15      $nonce = $_POST[\\'_mwf_nonce\\'] ?? \\'\\';\\n16      if (wp_verify_nonce($nonce, \\'mwf_save\\') === true) {\\n17          update_option(\\'mwf_settings\\', mwf_settings($_POST));\\n18      } else {\\n19          wp_die(\\'Bad nonce\\', 403);\\n20      }\\n21  }\\n22\\n23  function mwf_filter_posts(array $posts): array {\\n24      $status = $_GET[\\'status\\'] ?? \\'publish\\';\\n25      $keep = array_filter($posts, fn($p) => $p->post_status === $status\\n26          && in_array($p->post_status, MWF_ALLOWED));\\n27      usort($keep, fn($a, $b) => $a->menu_order > $b->menu_order);\\n28      return array_values($keep);\\n29  }\\n```\\n\\n**PART C \u2014 zsh 5.9 script on macOS 15 (stock /bin/date, no coreutils)**\\n```\\n 1  #!/bin/zsh\\n 2  # precondition: at least one debug*.log exists\\n 3  set -e\\n 4  backup_dir=\"$HOME/backups\"\\n 5  files=(~/Sites/wp-content/debug*.log)\\n 6  first=$files[0]\\n 7  stamp=$(date -d \\'-1 day\\' \\'+%Y%m%d\\')\\n 8  dest=\"$backup_dir/wp $stamp\"\\n 9  mkdir -p $dest\\n10  cp $first $dest/\\n11  echo \"backed up $first -> $dest\"\\n```\\n\\n**PART D \u2014 Predict the EXACT stdout of this program on Python 3.14 (it is deterministic):**\\n```\\nimport asyncio\\n\\nasync def quick(tag):\\n    print(f\"Q{tag}\")\\n    return tag\\n\\nasync def slow(tag):\\n    print(f\"S{tag}-in\")\\n    await asyncio.sleep(0)\\n    print(f\"S{tag}-out\")\\n    return tag\\n\\nasync def main():\\n    t1 = asyncio.create_task(slow(1))\\n    t1.add_done_callback(lambda _: print(\"CB1\"))\\n    t2 = asyncio.create_task(slow(2))\\n    t2.cancel()\\n    print(\"M1\")\\n    await quick(3)\\n    print(\"M2\")\\n    await asyncio.sleep(0)\\n    print(\"M3\")\\n    try:\\n        await t2\\n    except asyncio.CancelledError:\\n        print(\"C2\")\\n    print(\"M4\", t1.done())\\n    await t1\\n    print(\"M5\")\\n\\nasyncio.run(main())\\n```\\n\\n**ANSWER IN EXACTLY THIS FORMAT (nothing else):**\\n```\\nFINDINGS:\\n<Part-letter>:<line> \u2014 <mechanism, max 15 words>\\n(one per line, sorted by part letter then line number; write \"none\" if no defects)\\nOUTPUT:\\n<the exact stdout of Part D, every line verbatim>\\n```', '--output-format', 'json']' timed out after 300 seconds",
+    "trial": 1,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)"
+  },
+  {
+    "elapsed_s": 69.83,
+    "timed_out": false,
+    "cost_usd": 0.3519765,
+    "output": "```\nFINDINGS:\nA:8 \u2014 get_event_loop() with no running loop raises RuntimeError on 3.14\nA:35 \u2014 Datastar 1.0 event name is datastar-patch-elements, not datastar-merge-fragments\nA:36 \u2014 key must be \"elements\"; embedded newline in html breaks the SSE frame\nA:49 \u2014 TaskGroup raises ExceptionGroup, so except ValueError never fires\nB:5 \u2014 unparenthesized nested ternary is a fatal compile error in PHP 8\nB:11 \u2014 union operator keeps defaults; user_args values silently ignored\nB:16 \u2014 wp_verify_nonce returns 1/2/false, never true; always wp_die\nB:27 \u2014 comparator returns bool, never -1; ordering incorrect (8.3 deprecation)\nC:6 \u2014 zsh arrays are 1-indexed; $files[0] is empty, cp gets no source\nC:7 \u2014 BSD date lacks -d relative dates; set -e aborts script\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```",
+    "error": null,
+    "trial": 1,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)"
+  },
+  {
+    "elapsed_s": 75.03,
+    "timed_out": false,
+    "cost_usd": 0.850355,
+    "output": "```\nFINDINGS:\nA:8 \u2014 Python 3.14: get_event_loop() without running loop raises RuntimeError; import crashes\nA:35 \u2014 Datastar 1.0 renamed event to datastar-patch-elements; merge-fragments is ignored\nA:36 \u2014 v1 expects \"elements\" prefix; also raw newlines in HTML break SSE data framing\nA:49 \u2014 TaskGroup wraps errors in ExceptionGroup; bare \"except ValueError\" never matches\nB:5 \u2014 unparenthesized nested ternary is a fatal compile error in PHP 8\nB:11 \u2014 \"+\" keeps left-side keys; defaults override user args, settings never applied\nB:16 \u2014 wp_verify_nonce returns int 1/2 or false, never true; check always fails\nB:27 \u2014 comparator returns bool, never -1; ordering wrong plus PHP 8 deprecation\nC:6 \u2014 zsh arrays are 1-indexed; $files[0] is empty, cp gets no source\nC:7 \u2014 BSD date lacks GNU -d; command fails, set -e aborts script\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```\n\nStopped at: \u23f1 2026-07-17 12:00:00",
+    "error": null,
+    "trial": 1,
+    "model_id": "fable-5",
+    "label": "Claude Fable 5"
+  },
+  {
+    "elapsed_s": 113.13,
+    "timed_out": false,
+    "cost_usd": null,
+    "output": "I'll verify Datastar 1.0 SSE event names and Python 3.14 asyncio/TaskGroup behavior against the pinned stack before listing only real defects.```\nFINDINGS:\nA:8 \u2014 get_event_loop() raises RuntimeError; no running loop at import\nA:35 \u2014 datastar-merge-fragments is not a Datastar 1.0 SSE event\nA:36 \u2014 fragments keyword and raw newlines break Datastar/SSE framing\nA:49 \u2014 TaskGroup wraps ValueError in ExceptionGroup; except misses it\nB:5 \u2014 unparenthesized nested ternary is a parse-time fatal error\nB:11 \u2014 array + keeps left keys so user_args never override defaults\nB:16 \u2014 wp_verify_nonce returns 1/2 not true; === true always fails\nC:6 \u2014 zsh arrays are 1-based; $files[0] expands empty\nC:7 \u2014 BSD date rejects -d; command fails under set -e\nC:9 \u2014 unquoted $dest splits on space; mkdir creates wrong paths\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```\n\nStopped at: \u23f1 2026-07-17 12:00:00",
+    "error": null,
+    "trial": 1,
+    "model_id": "grok",
+    "label": "xAI Grok (Build CLI)"
+  },
+  {
+    "elapsed_s": 159.47,
+    "timed_out": false,
+    "cost_usd": 0.4098765,
+    "output": "```\nFINDINGS:\nA:8 \u2014 get_event_loop() without running loop raises RuntimeError in Python 3.14\nA:36 \u2014 multi-line HTML in single data: field breaks SSE wire protocol\nA:49 \u2014 TaskGroup wraps ValueError in ExceptionGroup; except ValueError won't catch it\nB:5 \u2014 nested ternary without parentheses is a fatal error in PHP 8.0+\nB:11 \u2014 $defaults + $user_args gives defaults priority; user args ignored\nB:16 \u2014 wp_verify_nonce returns int 1|2, never bool true; === true always fails\nB:27 \u2014 usort comparator returns bool (0|1), never negative; sort is wrong\nC:7 \u2014 BSD date has no -d flag; macOS needs -v-1d\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```",
+    "error": null,
+    "trial": 2,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)"
+  },
+  {
+    "elapsed_s": 47.53,
+    "timed_out": false,
+    "cost_usd": 0.3266015,
+    "output": "```\nFINDINGS:\nA:8 \u2014 get_event_loop() at import with no running loop raises RuntimeError on 3.14\nA:35 \u2014 Datastar 1.0 event is datastar-patch-elements, not datastar-merge-fragments\nA:36 \u2014 wrong key (\"fragments\" vs \"elements\"); embedded newlines break SSE data framing\nA:49 \u2014 TaskGroup raises ExceptionGroup; bare `except ValueError` never catches it\nB:5 \u2014 unparenthesized nested ternary is a fatal compile error in PHP 8\nB:11 \u2014 `+` union keeps left operand; user_args never override defaults\nB:16 \u2014 wp_verify_nonce returns 1|2|false, never true; always wp_die\nB:27 \u2014 comparator returns bool; false coerces to 0, giving incorrect sort order\nC:6 \u2014 zsh arrays are 1-indexed; $files[0] is empty, so cp gets no source\nC:7 \u2014 BSD /bin/date has no -d option; command fails, set -e aborts\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```",
+    "error": null,
+    "trial": 2,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)"
+  },
+  {
+    "elapsed_s": 69.3,
+    "timed_out": false,
+    "cost_usd": 0.759486,
+    "output": "```\nFINDINGS:\nA:8 \u2014 Python 3.14 get_event_loop() raises RuntimeError with no running loop; import fails\nA:35 \u2014 Datastar 1.0 event is datastar-patch-elements; merge-fragments ignored by client\nA:36 \u2014 data prefix must be \"elements\"; embedded newlines also truncate SSE data field\nA:49 \u2014 TaskGroup raises ExceptionGroup; plain except ValueError never catches (needs except*)\nB:5 \u2014 unparenthesized nested ternary is a fatal parse error in PHP 8\nB:11 \u2014 union keeps left operand's keys; defaults always override user args\nB:16 \u2014 wp_verify_nonce returns int 1/2, never true; strict compare always dies\nB:27 \u2014 bool comparator never returns -1; ordering wrong plus PHP 8.3 deprecation\nC:6 \u2014 zsh arrays are 1-indexed; $files[0] empty, cp missing source\nC:7 \u2014 BSD date has no GNU -d; fails, set -e aborts script\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nCB1\nM5\n```",
+    "error": null,
+    "trial": 2,
+    "model_id": "fable-5",
+    "label": "Claude Fable 5"
+  },
+  {
+    "elapsed_s": 233.16,
+    "timed_out": false,
+    "cost_usd": null,
+    "output": "I'll verify Datastar 1.0 SSE event names and the Python 3.14 asyncio scheduling for Part D against the pinned stack.```\nFINDINGS:\nA:8 \u2014 get_event_loop() raises RuntimeError at import without a running loop\nA:35 \u2014 event datastar-merge-fragments invalid; Datastar 1.0 expects datastar-patch-elements\nA:36 \u2014 fragments keyword and raw HTML newlines break Datastar 1.0 SSE\nA:49 \u2014 TaskGroup raises ExceptionGroup; except ValueError never runs\nB:11 \u2014 array union keeps left keys so user_args cannot override defaults\nB:16 \u2014 wp_verify_nonce returns 1|2|false; === true always fails\nC:6 \u2014 zsh arrays are 1-indexed; files[0] is empty\nC:7 \u2014 BSD date has no -d; fails and set -e aborts\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```",
+    "error": null,
+    "trial": 2,
+    "model_id": "grok",
+    "label": "xAI Grok (Build CLI)"
+  },
+  {
+    "elapsed_s": 181.89,
+    "timed_out": false,
+    "cost_usd": 0.23901350000000002,
+    "output": "```\nFINDINGS:\nA:8 \u2014 get_event_loop() raises RuntimeError in 3.14 at module-import (no running loop)\nA:36 \u2014 render_card newlines split SSE data field; fragments arrive truncated\nA:49 \u2014 TaskGroup wraps ValueError in ExceptionGroup; except ValueError won't catch it\nB:5 \u2014 Nested ternary without parentheses is Fatal Error in PHP 8.0+\nB:11 \u2014 $defaults + $user_args keeps defaults; user args never override\nB:16 \u2014 wp_verify_nonce returns 1|2|false, never true; === true always fails\nB:27 \u2014 Comparator returns bool (0|1) not int; usort cannot detect a < b\nC:6 \u2014 zsh arrays are 1-indexed; $files[0] is empty, not the first element\nC:7 \u2014 BSD date has no -d flag; must use -v-1d on macOS\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```",
+    "error": null,
+    "trial": 3,
+    "model_id": "opus-4-6",
+    "label": "Claude Opus 4.6 (1M ctx)"
+  },
+  {
+    "elapsed_s": 104.64,
+    "timed_out": false,
+    "cost_usd": 0.09475549999999999,
+    "output": "```\nFINDINGS:\nA:8 \u2014 asyncio.get_event_loop() with no running loop raises RuntimeError on 3.14\nA:35 \u2014 Datastar 1.0 event is datastar-patch-elements; datastar-merge-fragments is ignored\nA:36 \u2014 line key must be \"elements\"; embedded newlines in html break SSE framing\nA:49 \u2014 TaskGroup raises ExceptionGroup, not ValueError; except clause never catches\nB:5 \u2014 unparenthesized nested ternary is a fatal compile error in PHP 8\nB:11 \u2014 array union keeps left operand; defaults silently override user args\nB:16 \u2014 wp_verify_nonce returns 1|2|false, never true; always wp_die\nB:27 \u2014 comparator returns bool, never negative; sort order wrong (8.3 deprecation)\nC:6 \u2014 zsh arrays are 1-based; $files[0] is empty, cp gets no source\nC:7 \u2014 BSD date has no -d; command fails and set -e aborts\nC:9 \u2014 unquoted $dest with space makes mkdir create \"wp\" and stamp dirs\nC:10 \u2014 unquoted $dest/ splits into two args; cp target wrong\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```",
+    "error": null,
+    "trial": 3,
+    "model_id": "opus-4-8",
+    "label": "Claude Opus 4.8 (1M ctx)"
+  },
+  {
+    "elapsed_s": 66.2,
+    "timed_out": false,
+    "cost_usd": 0.756186,
+    "output": "```\nFINDINGS:\nA:8 \u2014 asyncio.get_event_loop() with no running loop raises RuntimeError on Python 3.14; import fails\nA:35 \u2014 Datastar 1.0 event is datastar-patch-elements; merge-fragments is ignored by client\nA:36 \u2014 prefix must be \"elements\" not \"fragments\"; raw newlines in HTML break SSE data framing\nA:49 \u2014 TaskGroup raises ExceptionGroup; bare \"except ValueError\" never matches, exception escapes\nB:5 \u2014 unparenthesized nested ternary is a fatal parse error in PHP 8\nB:11 \u2014 $defaults + $user_args keeps defaults' keys; user settings never applied\nB:16 \u2014 wp_verify_nonce returns int 1/2 or false, never true; === true always fails\nB:27 \u2014 comparator returns bool (0/1), never negative; usort ordering is incorrect\nC:6 \u2014 zsh arrays are 1-indexed; $files[0] is empty\nC:7 \u2014 BSD date has no GNU -d; command fails and set -e aborts script\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```",
+    "error": null,
+    "trial": 3,
+    "model_id": "fable-5",
+    "label": "Claude Fable 5"
+  },
+  {
+    "elapsed_s": 136.73,
+    "timed_out": false,
+    "cost_usd": null,
+    "output": "I'll verify Datastar 1.0 SSE event names, WordPress nonce return values, and macOS `date` behavior against the pinned stack.```\nFINDINGS:\nA:8 \u2014 get_event_loop() raises RuntimeError without a running loop\nA:35 \u2014 datastar-merge-fragments is not a Datastar 1.0 SSE event\nA:36 \u2014 data:fragments obsolete; embedded newlines break SSE framing\nA:49 \u2014 TaskGroup failures raise ExceptionGroup, not ValueError\nB:11 \u2014 array + prefers left; user_args never override defaults\nB:16 \u2014 wp_verify_nonce returns 1/2, so === true always fails\nC:6 \u2014 zsh arrays are 1-indexed; files[0] is always empty\nC:7 \u2014 macOS date has no -d; fails and aborts under set -e\nOUTPUT:\nM1\nQ3\nM2\nS1-in\nM3\nC2\nM4 False\nS1-out\nCB1\nM5\n```",
+    "error": null,
+    "trial": 3,
+    "model_id": "grok",
+    "label": "xAI Grok (Build CLI)"
+  }
+]

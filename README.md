@@ -216,6 +216,42 @@ quicker on hard — though only the easy-task direction clears significance at n
 > "one shot" label was not strictly enforced). Only v4 guarantees it. Re-running v1–v3 under `--tools ""`
 > is left as future work; v4's result (ceiling holds without tools) suggests it would not move much.
 
+### v1–v3 re-run under enforced one-shot (with cost + total time)
+
+The earlier caveat — v1–v3 ran with tools available — is now closed. All three were re-run at n=5 under
+`--tools ""` + `num_turns==1` assertion. v1/v2 accuracy is blind-judged (Fable + Grok agreed on every
+score); v1/v2 accuracy is trial-1 only, cost/time is all 5 runs; v3 is exec-scored across all 5.
+
+**Cost + total time to answer the full question set (median per run, tools off):**
+
+| Task | Model | Time (median) | Cost (median) | Cost (5-run total) |
+|---|---|---|---|---|
+| v1 (6-bug review) | 4.6 | 46.7s | $0.069 | $0.61 |
+| v1 | 4.8 | **24.7s** | $0.079 | $0.89 |
+| v2 (hard review) | 4.6 | 224.0s | $0.301 | $1.89 |
+| v2 | 4.8 | **174.0s** | $0.394 | $2.11 |
+| v3 (10 commands) | 4.6 | **17.8s** | $0.036 | $0.49 |
+| v3 | 4.8 | 22.4s | $0.054 | $0.38 |
+
+**Accuracy under enforced one-shot:**
+
+| Task | 4.6 | 4.8 | Winner |
+|---|---|---|---|
+| v1 easy review | **8.0** | 7.0 | 4.6 |
+| v2 hard review | 8.2 | **9.4** | 4.8 |
+| v3 commands | 50/50 | 50/50 | tie |
+
+**What enforcing one-shot changed:** the winner *direction* held vs the tools-enabled runs (easy→4.6,
+hard→4.8, commands→tie), but absolute review scores dropped now that models can't verify — v1 went from
+10/9 to 8/7. So tools *were* inflating the review scores, just not the winner.
+
+**The coherent finding — on review tasks, difficulty picks the model:** 4.6 is better on *easy* review,
+4.8 on *hard* review. Command generation is tied at ceiling.
+
+**Latency is task-TYPE dependent, not difficulty-dependent** — correcting the tidier story from the v3/v4
+sections. 4.8 is faster on *both* review tasks (v1 and v2), but 4.6 is faster on command generation (v3).
+There is no stable "faster model"; it flips with the kind of task, not just its hardness.
+
 ## Known limitations
 
 - **Small n.** Everything here is directional. Model-vs-model gaps at n=1–3 are not real.
