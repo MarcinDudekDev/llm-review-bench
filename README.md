@@ -258,13 +258,15 @@ The Opus tie raised the obvious question — what happens across a real *tier* g
 were run on **Claude Sonnet 5** and **Claude Haiku 4.5** under the same enforced one-shot condition
 (`--tools ""` + `num_turns==1`). This is where the benchmark finally separated models cleanly.
 
-Accuracy — review tasks are the 0–10 judged score (both judges agreed); command tasks are exec-scored totals:
+Accuracy — review tasks are the 0–10 judged score (both judges agreed); command tasks are exec-scored
+totals where the denominator is tasks × trials, so on v3 the Opus pair ran 5 trials each (50) and
+Sonnet/Haiku ran 10 (100); v4 ran 10 for all four (180):
 
 | Task | Opus 4.6 | Opus 4.8 | Sonnet 5 | Haiku 4.5 |
 |---|---|---|---|---|
 | v1 easy review | 8.0 | 7.0 | 8.0 | **5.5** |
 | v2 hard review | 8.2 | 9.4 | 8.8 | **6.5** |
-| v3 short commands | 100/100 | 100/100 | 100/100 | 93/100 |
+| v3 short commands | 50/50 | 50/50 | 100/100 | 93/100 |
 | v4 hard commands | 180/180 | 179/180 | 179/180 | **122/180** |
 
 Median latency (seconds), same runs:
@@ -281,8 +283,9 @@ Charts: `blog/chart-1.png` (accuracy) and `blog/chart-2.png` (latency).
 **Two findings the Opus-vs-Opus pairing never produced:**
 
 1. **Sonnet 5 is the value winner.** It matched Opus 4.8 on the hard command set (179/180), stayed within
-   a point on hard review, ran the **fastest of all four models on every task**, and lists at a third of
-   Opus pricing ($3/$15 vs $5/$25). On this data it's the sensible default for review + command work.
+   a point on hard review, ran the **fastest of all four models on every task**, and lists at about 60%
+   of Opus's per-token price ($3/$15 vs $5/$25), cheaper still per run since it burns fewer tokens. On
+   this data it's the sensible default for review + command work.
 2. **Haiku 4.5 is both the least accurate *and* the slowest model.** It drops to 122/180 on hard commands
    and 5.5/10 on easy review, and it's the slowest model on v1/v3/v4 — 80.9s vs Sonnet's 12.8s on short
    commands. The cause is **adaptive thinking**: Haiku burns a large thinking-token budget even on simple

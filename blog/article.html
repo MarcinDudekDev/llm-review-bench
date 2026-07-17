@@ -1,5 +1,5 @@
 <div class="tldr">
-  <p><strong>Abstract.</strong> I built a small benchmark to answer one question: is Claude Opus 4.6 actually worse than 4.8, or does it just feel older? It scores the half of code review that most evals ignore, which is restraint - not flagging correct code that looks suspicious. Four models, four task families, one-shot and mechanically scored. The two Opus models came out statistically tied, and they cost the same, so there's no reason to pick one on price. Across a real tier gap, Sonnet 5 matched Opus on almost everything while running fastest and costing a third as much. The surprise was Haiku 4.5: it was both the least accurate model and the slowest, because adaptive thinking makes it burn a huge token budget on simple tasks. Every number here is directional, small-n, one machine. The method is the point.</p>
+  <p><strong>Abstract.</strong> I built a small benchmark to answer one question: is Claude Opus 4.6 actually worse than 4.8, or does it just feel older? It scores the half of code review that most evals ignore, which is restraint - not flagging correct code that looks suspicious. Four models, four task families, one-shot and mechanically scored. The two Opus models came out statistically tied, and they cost the same, so there's no reason to pick one on price. Across a real tier gap, Sonnet 5 matched Opus on almost everything while running fastest and costing less - around 60% of Opus's per-token price, and cheaper still per run because it burns fewer tokens. The surprise was Haiku 4.5: it was both the least accurate model and the slowest, because adaptive thinking makes it burn a huge token budget on simple tasks. Every number here is directional, small-n, one machine. The method is the point.</p>
 </div>
 
 <p>This started as a boring question. Can I still run Claude Code on Opus 4.6? It's not in the model picker anymore. Ten minutes of poking gave me the answer - pass the full model ID to <code>--model</code> and the picker just hides it. But the question underneath wouldn't let go. Is 4.6 actually worse than 4.8, or does it only feel older because it's not the default?</p>
@@ -74,7 +74,7 @@ if d.get("num_turns", 1) != 1:          # a tool call would force turn 2
 
 <h2>4. Results</h2>
 
-<p>All four models, all four tasks, under the enforced one-shot condition. Review tasks are on a 0-10 judged scale (both judges agreed). Command tasks are exec-scored totals.</p>
+<p>All four models, all four tasks, under the enforced one-shot condition. Review tasks are on a 0-10 judged scale (both judges agreed). Command tasks are exec-scored totals, where the denominator is tasks times trials: on v3 the Opus pair ran 5 trials each (50) and Sonnet and Haiku ran 10 (100); v4 ran 10 trials for all four (180).</p>
 
 <div class="table-wrap">
   <table class="data-table">
@@ -84,7 +84,7 @@ if d.get("num_turns", 1) != 1:          # a tool call would force turn 2
     <tbody>
       <tr><td>v1 easy review</td><td>8.0</td><td>7.0</td><td>8.0</td><td>5.5</td></tr>
       <tr><td>v2 hard review</td><td>8.2</td><td>9.4</td><td>8.8</td><td>6.5</td></tr>
-      <tr><td>v3 short commands</td><td>100/100</td><td>100/100</td><td>100/100</td><td>93/100</td></tr>
+      <tr><td>v3 short commands</td><td>50/50</td><td>50/50</td><td>100/100</td><td>93/100</td></tr>
       <tr><td>v4 hard commands</td><td>180/180</td><td>179/180</td><td>179/180</td><td>122/180</td></tr>
     </tbody>
   </table>
@@ -103,7 +103,7 @@ if d.get("num_turns", 1) != 1:          # a tool call would force turn 2
 
 <h3>4.2 Sonnet 5 is the value story</h3>
 
-<p>The Opus tie made me want a real tier gap, so I ran everything on Sonnet 5 versus Haiku 4.5. Sonnet 5 is the standout. It matched Opus 4.8 on the hard command set (179/180), stayed within a point on hard review, and it did that while running the fastest of all four models. At 3 dollars per million input tokens it's a third of Opus pricing. If I were choosing a default model for review and command work today, on this data I'd reach for Sonnet 5 first.</p>
+<p>The Opus tie made me want a real tier gap, so I ran everything on Sonnet 5 versus Haiku 4.5. Sonnet 5 is the standout. It matched Opus 4.8 on the hard command set (179/180), stayed within a point on hard review, and it did that while running the fastest of all four models. At 3 dollars per million input tokens it's about 60% of Opus's per-token price (Opus is 5), and cheaper still per run because it burns fewer tokens. If I were choosing a default model for review and command work today, on this data I'd reach for Sonnet 5 first.</p>
 
 <h3>4.3 Haiku 4.5 is where the gap finally shows</h3>
 
