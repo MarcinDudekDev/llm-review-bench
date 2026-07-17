@@ -285,9 +285,11 @@ Charts: `blog/chart-1.png` (accuracy) and `blog/chart-2.png` (latency).
    Opus pricing ($3/$15 vs $5/$25). On this data it's the sensible default for review + command work.
 2. **Haiku 4.5 is both the least accurate *and* the slowest model.** It drops to 122/180 on hard commands
    and 5.5/10 on easy review, and it's the slowest model on v1/v3/v4 — 80.9s vs Sonnet's 12.8s on short
-   commands, *costing more per run* despite a third the per-token rate. The cause is **adaptive thinking**:
-   Haiku burns a large thinking-token budget on simple tasks, which erases its fast-and-cheap positioning.
-   Reach for it on a task that needs real reasoning and you may pay more for less — measure first.
+   commands. The cause is **adaptive thinking**: Haiku burns a large thinking-token budget even on simple
+   tasks. On short commands (v3) that budget makes it *cost more per run than Sonnet* despite a third the
+   per-token rate. Cost nuance: this inversion only happens on v3 — on v1/v2/v4 Haiku is still the cheapest
+   of the four, just the slowest and least accurate. It's slow everywhere; it's only not-cheap on the one
+   task where you'd least expect it. Reach for it on work that needs real reasoning and measure first.
 
 Consolidated data for all four models is in `results/ALL_RESULTS.json`; the Sonnet/Haiku summary is in
 `results/sonnet_haiku_summary.json`. A full research-paper writeup of the whole investigation lives in `blog/`.

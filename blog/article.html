@@ -125,10 +125,10 @@ if d.get("num_turns", 1) != 1:          # a tool call would force turn 2
   </table>
 </div>
 
-<p>Read that twice. Haiku, the model whose entire brand is fast and cheap, was six times slower than Sonnet 5 and cost more per run, on the same tasks. It's priced at a third of Sonnet's per-token rate, yet it cost more, which means it generated far more tokens.</p>
+<p>Read that twice. On this short-command task, Haiku - the model whose entire brand is fast and cheap - was six times slower than Sonnet 5 and cost more per run. It's priced at a third of Sonnet's per-token rate, yet it cost more, which means it generated far more tokens. To be precise about cost: this pricing inversion only happens on v3. On the harder tasks (v1, v2, v4) Haiku is still the cheapest of the four, just the slowest and least accurate.</p>
 
 <div class="insight">
-  <p>The cause is adaptive thinking. Haiku 4.5 burns an enormous thinking budget on these problems, which makes it slow and cancels its price advantage at the same time. On this workload the fast, cheap model was neither.</p>
+  <p>The cause is adaptive thinking. Haiku 4.5 burns an enormous thinking budget on these problems, which makes it the slowest model on three of four tasks. On the short-command task it burns enough that it's not even the cheap option anymore. Slow everywhere, and not cheap where you'd least expect it.</p>
 </div>
 
 <figure class="chart">
@@ -154,4 +154,4 @@ if d.get("num_turns", 1) != 1:          # a tool call would force turn 2
   <li>"Fast and cheap" is a claim about a workload, not a model. Haiku's thinking budget made it the slowest here.</li>
 </ol>
 
-<p>Next I want to run the discriminating tasks at proper n, on a quiet machine, with latency measured over ten trials instead of guessed from three. The harness is built for it now. If you want to poke at it or add your own model, it's all on <a href="https://github.com/MarcinDudekDev/llm-review-bench">GitHub</a>.</p>
+<p>Next I want to re-run the discriminating tasks on a quiet machine to cut the API-weather noise, and judge the review tasks across every trial instead of only the first. The command tasks were already scored over repeated trials (n=10 for v3 and v4); the review scores are the single-judged-trial soft spot. The harness is built for it now. If you want to poke at it or add your own model, it's all on <a href="https://github.com/MarcinDudekDev/llm-review-bench">GitHub</a>.</p>

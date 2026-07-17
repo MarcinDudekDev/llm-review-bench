@@ -90,9 +90,9 @@ I expected Haiku to be less accurate. I did not expect it to be **slow**. On the
 - **Sonnet 5:** median **12.8s**, $0.0247/run
 - **Haiku 4.5:** median **80.9s**, $0.0455/run
 
-Read that again. Haiku — the model whose entire brand is "fast and cheap" — was **6x slower and cost more per run** than Sonnet 5, on the same tasks. It's priced at one-third of Sonnet's per-token rate, yet cost *more*, which means it generated far more tokens.
+Read that again. On this short-command task, Haiku (whose entire brand is "fast and cheap") was **6x slower and cost more per run** than Sonnet 5. It's priced at one-third of Sonnet's per-token rate, yet cost *more*, which means it generated far more tokens. Precise cost note: this inversion only shows up on v3. On v1/v2/v4 Haiku is still the cheapest of the four, just the slowest and least accurate.
 
-The culprit is **adaptive thinking.** Haiku 4.5 burns an enormous thinking-token budget on these problems — which simultaneously makes it slow and erases its price advantage. On this workload, the "fast, cheap" model is neither fast nor cheap. If you reach for Haiku to save latency and money on a task that needs any real reasoning, measure it first — you may be paying more for less.
+The culprit is **adaptive thinking.** Haiku 4.5 burns an enormous thinking-token budget on these problems, which makes it the slowest model on three of four tasks and, on short commands, no longer even the cheap option. If you reach for Haiku to save latency on a task that needs any real reasoning, measure it first.
 
 {{LATENCY_CHART}}
 
