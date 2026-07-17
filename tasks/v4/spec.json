@@ -1,0 +1,168 @@
+{
+  "system_prompt": "You are taking a pure ACCURACY benchmark for shell one-liners. Think as long as you need before answering \u2014 there is no speed component, only correctness. You get exactly ONE shot per task: your command will be executed once in a sandbox and its stdout compared BYTE-FOR-BYTE against a golden answer (only a single trailing newline is trimmed). There is no chance to run, test, or revise anything. Environment: macOS with BSD userland (/bin/bash, BSD sed/awk/sort/grep/wc/join/uniq/tr \u2014 NOT GNU; no gsed/gsort; grep has no -P), plus python3 and jq available. Each command runs with bash -c in a directory containing exactly the input files described in the task. Commands must be pure and deterministic: no network, no writing files, no reading the clock. Output EXACTLY 10 lines, one per task, each of the form `Qn: <command>` where <command> is the raw one-line shell command. No code fences, no backticks, no explanations, no blank lines \u2014 anything else is scored as wrong.",
+  "tasks": [
+    {
+      "id": "Q1",
+      "prompt": "The file sales.csv contains exactly these 6 lines:\nfruit,apple,12.55\nveg,carrot,7.25\nfruit,banana,3.75\nveg,onion,2.50\ndairy,milk,16.30\nfruit,cherry,0.00\nEach line is category,item,amount. Print the total amount per category, one line per category, formatted as `category total` (single space separator) with the total rounded to exactly 2 decimal places. Sort lines by total DESCENDING; break ties by category name ASCENDING.",
+      "setup": "printf 'fruit,apple,12.55\\nveg,carrot,7.25\\nfruit,banana,3.75\\nveg,onion,2.50\\ndairy,milk,16.30\\nfruit,cherry,0.00\\n' > sales.csv",
+      "reference_command": "awk -F, '{s[$1]+=$3} END{for(c in s) printf \"%s %.2f\\n\", c, s[c]}' sales.csv | sort -k2,2nr -k1,1",
+      "golden": "dairy 16.30\nfruit 16.30\nveg 9.75",
+      "trap": "fruit and dairy tie at exactly 16.30; `sort -k2,2nr` (or -rn) without an explicit `-k1,1` secondary key leaves the tie order to sort's last-resort whole-line comparison, which under -r puts fruit before dairy \u2014 wrong. Also relying on awk's for-in ordering, or printing unformatted sums (16.3 instead of 16.30), fails the byte compare.",
+      "proposer": "fable-5"
+    },
+    {
+      "id": "Q2",
+      "prompt": "Two files. products.csv contains exactly these 4 lines (NOT sorted):\np03,widget\np01,gadget\np02,doohickey\np05,gizmo\nstock.csv contains exactly these 3 lines:\np01,42\np03,7\np05,0\nFor EVERY product, print `id,name,qty` (comma-separated, no spaces), where qty comes from stock.csv, or the literal string NA if the id has no stock line. Output sorted by id ASCENDING.",
+      "setup": "printf 'p03,widget\\np01,gadget\\np02,doohickey\\np05,gizmo\\n' > products.csv; printf 'p01,42\\np03,7\\np05,0\\n' > stock.csv",
+      "reference_command": "join -t, -a1 -e NA -o 0,1.2,2.2 <(sort -t, -k1,1 products.csv) <(sort -t, -k1,1 stock.csv)",
+      "golden": "p01,gadget,42\np02,doohickey,NA\np03,widget,7\np05,gizmo,0",
+      "trap": "join requires both inputs pre-sorted on the key \u2014 products.csv is not, so a bare `join products.csv stock.csv` silently drops/garbles rows. And `-e NA` only substitutes for missing fields when an explicit `-o` field list is given; `join -a1 -e NA` without `-o` prints `p02,doohickey` with no NA field.",
+      "proposer": "fable-5"
+    },
+    {
+      "id": "Q3",
+      "prompt": "The file words.txt has DOS (CRLF) line endings and contains exactly these 7 lines: Apple, BANANA, apple, Cherry, banana, CHERRY, date (each line terminated by \\r\\n). Print the lines deduplicated CASE-INSENSITIVELY, keeping only the FIRST occurrence of each word in its original spelling and original order. Output must use plain LF line endings with no carriage returns.",
+      "setup": "printf 'Apple\\r\\nBANANA\\r\\napple\\r\\nCherry\\r\\nbanana\\r\\nCHERRY\\r\\ndate\\r\\n' > words.txt",
+      "reference_command": "tr -d '\\r' < words.txt | awk '!seen[tolower($0)]++'",
+      "golden": "Apple\nBANANA\nCherry\ndate",
+      "trap": "Forgetting to strip \\r yields output whose every line ends in an invisible CR \u2014 dedup still works but the byte compare fails. Alternatively `sort -uf` dedups case-insensitively but destroys original order and may keep the wrong spelling; BSD `uniq -i` only collapses adjacent lines.",
+      "proposer": "fable-5"
+    },
+    {
+      "id": "Q4",
+      "prompt": "The file stats.txt contains exactly these 4 lines:\nalice 2 5\nbob 4 9\ncarol 2 7\ndave 4 6\nEach line is `name count total`. For each line, in input order, compute the average total/count and round it to the nearest INTEGER using HALF-UP rounding (x.5 always rounds up, e.g. 2.5 -> 3). Print one line per input line formatted `name avg`.",
+      "setup": "printf 'alice 2 5\\nbob 4 9\\ncarol 2 7\\ndave 4 6\\n' > stats.txt",
+      "reference_command": "awk '{printf \"%s %d\\n\", $1, int($3/$2 + 0.5)}' stats.txt",
+      "golden": "alice 3\nbob 2\ncarol 4\ndave 2",
+      "trap": "The natural `printf \"%.0f\"` uses IEEE round-half-to-even: 5/2=2.5 prints as 2, not the required 3 (verified: BSD awk %.0f of 2.5 -> 2). python3's round() has the same banker's-rounding behavior. You must implement half-up explicitly, e.g. int(x+0.5).",
+      "proposer": "fable-5"
+    },
+    {
+      "id": "Q5",
+      "prompt": "The file ledger.txt contains exactly these 6 lines:\n# monthly ledger\n2024-01-02 CREDIT 100.00\n2024-01-05 DEBIT 42.35\n# adjustment\n2024-01-09 DEBIT 77.10\n2024-01-12 CREDIT 5.00\nIgnoring lines starting with #, maintain a running balance starting at 0 where CREDIT adds the amount and DEBIT subtracts it. For each transaction, in order, print `date balance` where balance is formatted with printf format %09.2f (2 decimals, zero-padded to a total field width of 9 characters, minus sign counted inside the width, e.g. -19.45 prints as -00019.45).",
+      "setup": "printf '# monthly ledger\\n2024-01-02 CREDIT 100.00\\n2024-01-05 DEBIT 42.35\\n# adjustment\\n2024-01-09 DEBIT 77.10\\n2024-01-12 CREDIT 5.00\\n' > ledger.txt",
+      "reference_command": "grep -v '^#' ledger.txt | awk '{b += ($2==\"CREDIT\" ? $3 : -$3); printf \"%s %09.2f\\n\", $1, b}'",
+      "golden": "2024-01-02 000100.00\n2024-01-05 000057.65\n2024-01-09 -00019.45\n2024-01-12 -00014.45",
+      "trap": "The balance goes negative mid-stream: %09.2f puts the zeros AFTER the minus sign (-00019.45, 9 chars total). Hand-rolling the padding, using width 8, or space-padding gives a near-miss. Forgetting to skip the two # comment lines corrupts the running total via awk's uninitialized-field arithmetic.",
+      "proposer": "fable-5"
+    },
+    {
+      "id": "Q6",
+      "prompt": "The file matrix.tsv is TAB-separated with exactly these 3 rows and 3 columns:\nid\\tname\\tqty\nr1\\tblue pen\\t3\nr2\\tred ink\\t7\nNote that some cells contain internal spaces (e.g. `blue pen` is ONE cell). Print the transpose of this matrix, TAB-separated: 3 rows where row i contains column i of the original (first output row: id, r1, r2). No trailing tabs.",
+      "setup": "printf 'id\\tname\\tqty\\nr1\\tblue pen\\t3\\nr2\\tred ink\\t7\\n' > matrix.tsv",
+      "reference_command": "awk -F'\\t' '{for(i=1;i<=NF;i++) r[i]=(NR==1 ? $i : r[i] \"\\t\" $i)} END{for(i=1;i<=NF;i++) print r[i]}' matrix.tsv",
+      "golden": "id\tr1\tr2\nname\tblue pen\tred ink\nqty\t3\t7",
+      "trap": "awk's default FS splits on ANY whitespace, so `blue pen` becomes two fields and the transpose gains a phantom column \u2014 you must set FS to a literal tab (and join output cells with tabs, not OFS-default spaces). A build-string approach that appends `$i \"\\t\"` unconditionally leaves a trailing tab on every line.",
+      "proposer": "fable-5"
+    },
+    {
+      "id": "Q7",
+      "prompt": "The file scores.txt contains exactly these 7 lines:\neve 90\nbob 85\nalice 90\nbob 92\ncarol 88\ndave 92\neve 70\nEach line is `name score`; names can repeat. First reduce to each player's MAXIMUM score, then print the top 3 players as `name score`, sorted by score DESCENDING with ties broken by name ASCENDING.",
+      "setup": "printf 'eve 90\\nbob 85\\nalice 90\\nbob 92\\ncarol 88\\ndave 92\\neve 70\\n' > scores.txt",
+      "reference_command": "awk '{if(!($1 in m) || $2>m[$1]) m[$1]=$2} END{for(n in m) print n, m[n]}' scores.txt | sort -k2,2nr -k1,1 | head -3",
+      "golden": "bob 92\ndave 92\nalice 90",
+      "trap": "Three stacked decisions: bob's max is his SECOND entry (92, not 85 \u2014 first-occurrence dedup like `sort -u -k1,1` or `!seen[$1]++` keeps 85); bob/dave tie at 92 and alice/eve tie at 90, so without an explicit `-k1,1` secondary key BSD sort's last-resort comparison under -r reverses the tie order; and the 90-tie sits exactly on the top-3 cutoff, so the wrong tie-break swaps eve in for alice.",
+      "proposer": "fable-5"
+    },
+    {
+      "id": "Q8",
+      "prompt": "The file events.txt contains exactly these 5 lines:\n03-Mar-2024 backup completed\n15-Jan-2024 server rebooted\n07-Feb-2024 disk replaced\n15-Dec-2023 fleet audit done\n28-Jan-2024 cache cleared\nEach line starts with a date in DD-Mon-YYYY form (English 3-letter month) followed by a message. Reprint every line with the date converted to ISO YYYY-MM-DD form (2-digit month) followed by the unchanged message, and sort the output lines chronologically ascending.",
+      "setup": "printf '03-Mar-2024 backup completed\\n15-Jan-2024 server rebooted\\n07-Feb-2024 disk replaced\\n15-Dec-2023 fleet audit done\\n28-Jan-2024 cache cleared\\n' > events.txt",
+      "reference_command": "awk 'BEGIN{split(\"Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec\",a,\" \"); for(i=1;i<=12;i++) m[a[i]]=i} {split($1,d,\"-\"); msg=$0; sub(/^[^ ]+ /,\"\",msg); printf \"%s-%02d-%s %s\\n\", d[3], m[d[2]], d[1], msg}' events.txt | sort",
+      "golden": "2023-12-15 fleet audit done\n2024-01-15 server rebooted\n2024-01-28 cache cleared\n2024-02-07 disk replaced\n2024-03-03 backup completed",
+      "trap": "GNU `date -d '03-Mar-2024'` does not exist on BSD; BSD needs `date -j -f`, and reaching for the date binary at all invites locale/clock issues \u2014 the robust answer is a month-name lookup table in awk. Printing the month without %02d zero-padding (2024-3-03) or sorting before converting (Dec-2023 sorts after Mar-2024 lexically) both corrupt the order or bytes.",
+      "proposer": "fable-5"
+    },
+    {
+      "id": "Q9",
+      "prompt": "The file access.log contains exactly these 7 lines:\n10.0.0.1 - GET /index\n172.16.4.2 - GET /a\n10.0.0.1 - POST /b\n192.168.1.10 - GET /c\n10.0.0.1 - GET /d\n172.16.4.2 - GET /e\n192.168.1.10 - POST /f\nExtract every IPv4 address (pattern: four 1-3 digit groups separated by dots) and print each distinct address with its occurrence count, formatted `ip count` (single space, ip first). Sort by count DESCENDING, ties by ip in ASCENDING lexicographic (string) order.",
+      "setup": "printf '10.0.0.1 - GET /index\\n172.16.4.2 - GET /a\\n10.0.0.1 - POST /b\\n192.168.1.10 - GET /c\\n10.0.0.1 - GET /d\\n172.16.4.2 - GET /e\\n192.168.1.10 - POST /f\\n' > access.log",
+      "reference_command": "grep -oE '[0-9]{1,3}(\\.[0-9]{1,3}){3}' access.log | sort | uniq -c | sort -k1,1nr -k2,2 | awk '{print $2, $1}'",
+      "golden": "10.0.0.1 3\n172.16.4.2 2\n192.168.1.10 2",
+      "trap": "grep -P and \\d do not exist in BSD grep (must use -E with [0-9] classes). Leaving `uniq -c` output as-is fails on its leading space padding and count-first order \u2014 it must be reswizzled to `ip count`. And the 172/192 tie at count 2 requires an explicit `-k2,2` secondary key; last-resort comparison under a reversed numeric primary gets the tie backwards.",
+      "proposer": "fable-5"
+    },
+    {
+      "id": "Q10",
+      "prompt": "The file orders.json contains exactly this JSON (one line):\n[{\"region\":\"east\",\"items\":[{\"price\":2.50,\"qty\":3},{\"price\":1.10,\"qty\":2}]},{\"region\":\"west\",\"items\":[{\"price\":10.00,\"qty\":1}]},{\"region\":\"east\",\"items\":[{\"price\":0.99,\"qty\":5}]},{\"region\":\"north\",\"items\":[{\"price\":3.33,\"qty\":3}]}]\nCompute total revenue per region (sum over all of that region's orders of price*qty over their items). Print one line per region formatted `region<TAB>total` with the total to exactly 2 decimal places (10 prints as 10.00), sorted by region name ASCENDING.",
+      "setup": "printf '[{\"region\":\"east\",\"items\":[{\"price\":2.50,\"qty\":3},{\"price\":1.10,\"qty\":2}]},{\"region\":\"west\",\"items\":[{\"price\":10.00,\"qty\":1}]},{\"region\":\"east\",\"items\":[{\"price\":0.99,\"qty\":5}]},{\"region\":\"north\",\"items\":[{\"price\":3.33,\"qty\":3}]}]\\n' > orders.json",
+      "reference_command": "jq -r '.[] | [.region, ([.items[] | .price*.qty] | add)] | @tsv' orders.json | awk -F'\\t' '{s[$1]+=$2} END{for(r in s) printf \"%s\\t%.2f\\n\", r, s[r]}' | sort",
+      "golden": "east\t14.65\nnorth\t9.99\nwest\t10.00",
+      "trap": "Doing the formatting inside jq is the killer: jq prints 10.00*1 as `10` (not `10.00`) and float sums can surface as 14.649999999999999; jq has no printf-style %.2f, and the `*100|round/100` idiom still prints `10` for west. The clean path hands raw sums to awk/printf for fixed 2-decimal formatting. `east` appears in two separate order objects and must be merged, and group_by/aggregation plus tab separators must all line up.",
+      "proposer": "fable-5"
+    },
+    {
+      "id": "G1",
+      "prompt": "You are given two CSV files in the current directory (headers on line 1):\n\nproducts.csv columns: sku,cat\nsales.csv columns: sku,qty,price\n\nCompute per-category revenue where revenue for a sale line is (qty * price). If a sales.sku is not present in products.csv, attribute that line to category UNKNOWN. Categories that appear only in products.csv with no sales must NOT appear.\n\nOutput exactly one line per category that has at least one sale, format:\nCAT|COUNT|REVENUE\nwhere COUNT is the number of sale lines in that category (integer, no padding) and REVENUE is the sum of qty*price formatted with exactly two digits after the decimal point (awk/printf %.2f rules).\n\nSort lines by REVENUE descending (numeric), breaking ties by CAT ascending (lexicographic). Print a single trailing newline at end of output, nothing else. Use only the provided files; no network.",
+      "setup": "printf 'sku,cat\\nB2,tools\\nA1,books\\nC3,tools\\nD4,food\\n' > products.csv\nprintf 'sku,qty,price\\nA1,2,3.50\\nB2,1,10\\nA1,1,3.50\\nE5,4,1.25\\nC3,3,2.00\\nB2,2,10\\n' > sales.csv",
+      "reference_command": "awk -F, 'NR==FNR{if(NR>1)p[$1]=$2;next} FNR>1{c=($1 in p)?p[$1]:\"UNKNOWN\"; rev[c]+=$2*$3; n[c]++} END{for(c in rev) printf \"%s|%d|%.2f\\n\", c, n[c], rev[c]}' products.csv sales.csv | sort -t'|' -k3,3nr -k1,1",
+      "golden": "tools|3|36.00\nbooks|2|10.50\nUNKNOWN|1|5.00",
+      "trap": "Missing UNKNOWN for orphan SKUs; sorting REVENUE lexicographically; forgetting qty*price; including categories with zero sales.",
+      "proposer": "grok"
+    },
+    {
+      "id": "G2",
+      "prompt": "File m.csv is a comma-separated table with a header. Lines may end with CRLF (\\r\\n). Columns: host,cpu,mem. The mem field may be empty.\n\nSelect rows where cpu >= 9.5 (numeric). Empty mem means 0.\n\nEmit one line per selected host:\nhost:cpu:mem\nwhere cpu is printed with exactly one digit after the decimal point (printf %.1f), and mem is a plain integer (no decimals, no padding).\n\nSort by cpu descending (numeric), then host ascending (pure lexicographic byte order \u2014 NOT natural/version sort). Single trailing newline. No extra spaces.",
+      "setup": "printf 'host,cpu,mem\\r\\n' > m.csv\nprintf 'web1,80.5,\\r\\n' >> m.csv\nprintf 'web2,9.5,1024\\r\\n' >> m.csv\nprintf 'db1,80.5,2048\\r\\n' >> m.csv\nprintf 'web10,100,512\\r\\n' >> m.csv\nprintf 'api,9.50,256\\r\\n' >> m.csv",
+      "reference_command": "tr -d '\\r' < m.csv | awk -F, 'NR>1 && $2+0>=9.5 {mem=($3==\"\")?0:$3+0; printf \"%s:%.1f:%d\\n\",$1,$2+0,mem}' | sort -t: -k2,2nr -k1,1",
+      "golden": "web10:100.0:512\ndb1:80.5:2048\nweb1:80.5:0\napi:9.5:256\nweb2:9.5:1024",
+      "trap": "Leaving CR in fields; empty mem not coerced to 0; cpu as %.2f; natural sort so web2 before web10; treating 9.50 filter as string.",
+      "proposer": "grok"
+    },
+    {
+      "id": "G3",
+      "prompt": "File scores.csv has header team,user,score and one row per user score (integers).\n\nFor each team with at least 2 scores, compute the arithmetic mean of score.\n\nOutput lines:\nTEAM AVG N\nwhere AVG is mean formatted with exactly two decimal places (awk printf \"%.2f\" rounding), N is the integer count of scores for that team.\n\nOmit teams with fewer than 2 scores. Sort by AVG descending (numeric), then N descending (numeric), then TEAM ascending (lexicographic). Single trailing newline.",
+      "setup": "printf 'team,user,score\\nred,alice,10\\nred,bob,9\\nblue,carl,10\\nblue,dee,8\\nred,eve,7\\nblue,frank,9\\ngreen,gina,10\\ngreen,hal,10\\n' > scores.csv",
+      "reference_command": "tail -n +2 scores.csv | awk -F, '{s[$1]+=$3;n[$1]++} END{for(t in s) if(n[t]>=2) printf \"%s %.2f %d\\n\", t, s[t]/n[t], n[t]}' | sort -k2,2nr -k3,3nr -k1,1",
+      "golden": "green 10.00 2\nblue 9.00 3\nred 8.67 3",
+      "trap": "Wrong %.2f rounding for 26/3; including n<2 teams; sort key order AVG/N/TEAM wrong; integer division.",
+      "proposer": "grok"
+    },
+    {
+      "id": "G4",
+      "prompt": "File app.log has lines: DATE LEVEL where LEVEL is a lowercase word (error/info/warn/...).\n\nCount occurrences of each LEVEL across the whole file (ignore DATE). Emit:\nLEVEL COUNT\nwhere LEVEL is uppercased and COUNT is the integer count zero-padded to width 3 (e.g. 006).\n\nSort by COUNT descending (numeric), then LEVEL ascending (lexicographic). Do not use the default spacing from `uniq -c` as your final format. Single trailing newline.",
+      "setup": "printf '2024-01-01 error\\n2024-01-01 info\\n2024-01-01 error\\n2024-01-02 error\\n2024-01-02 error\\n2024-01-02 error\\n2024-01-01 warn\\n2024-01-03 info\\n2024-01-03 info\\n2024-01-03 error\\n' > app.log",
+      "reference_command": "awk '{c[$2]++} END{for(k in c) printf \"%s %03d\\n\", toupper(k), c[k]}' app.log | sort -k2,2nr -k1,1",
+      "golden": "ERROR 006\nINFO 003\nWARN 001",
+      "trap": "Emitting uniq -c leading spaces as final format; forgetting toupper; zero-pad width wrong; sorting by level before count.",
+      "proposer": "grok"
+    },
+    {
+      "id": "G5",
+      "prompt": "Two parallel files (same number of lines, no headers):\nwords.txt \u2014 one word per line\nneed.txt \u2014 one integer per line\n\nKeep a word only when length(word) is exactly equal to the integer on the same line number in need.txt.\n\nAmong kept words, count how many share each length L. Output:\nL FREQ\nwhere L and FREQ are unpadded integers.\n\nSort by FREQ descending (numeric), then L ascending (numeric). Single trailing newline. You will need a multi-stage pipeline.",
+      "setup": "printf 'alpha\\nbb\\nc\\ndelta\\nee\\n' > words.txt\nprintf '3\\n2\\n1\\n5\\n2\\n' > need.txt",
+      "reference_command": "paste words.txt need.txt | awk '{if(length($1)==$2+0) print length($1)}' | sort -n | uniq -c | awk '{printf \"%d %d\\n\",$2,$1}' | sort -k2,2nr -k1,1n",
+      "golden": "2 2\n1 1\n5 1",
+      "trap": "Comparing length to need as strings; swapping L/FREQ columns; using uniq -c padding as output; sorting L before FREQ.",
+      "proposer": "grok"
+    },
+    {
+      "id": "G6",
+      "prompt": "File data.json is a single JSON object:\n{\"users\":[{\"id\":...,\"name\":\"...\",\"tags\":[\"...\"]}, ...]}\n\nFor each distinct tag across all users, collect the names of users who have that tag. A user with an empty tags array contributes nothing.\n\nOutput one line per tag that appears at least once:\ntag|count|names\nwhere count is the number of users having the tag, and names is those users' names sorted ascending lexicographically and joined with a single comma and no spaces (e.g. Ann,Bob,Cy).\n\nSort lines by count descending (numeric), then tag ascending (lexicographic). Single trailing newline. jq is available.",
+      "setup": "printf '%s\\n' '{\"users\":[{\"id\":1,\"name\":\"Ann\",\"tags\":[\"a\",\"b\"]},{\"id\":2,\"name\":\"Bob\",\"tags\":[\"b\"]},{\"id\":3,\"name\":\"Cy\",\"tags\":[\"a\",\"c\",\"b\"]},{\"id\":4,\"name\":\"Dee\",\"tags\":[]}]}' > data.json",
+      "reference_command": "jq -r '.users[] | .name as $n | .tags[] | \"\\(.)\\t\\($n)\"' data.json | sort -k1,1 -k2,2 | awk -F'\\t' '{if($1!=prev&&prev!=\"\"){printf \"%s|%d|%s\\n\", prev, n, names; n=0; names=\"\"} prev=$1; n++; names=(names==\"\"?$2:names\",\"$2)} END{if(prev!=\"\")printf \"%s|%d|%s\\n\",prev,n,names}' | sort -t'|' -k2,2nr -k1,1",
+      "golden": "b|3|Ann,Bob,Cy\na|2|Ann,Cy\nc|1|Cy",
+      "trap": "Spaces after commas in names; unsorted names; counting tag occurrences not users; including Dee empty tags; wrong secondary sort.",
+      "proposer": "grok"
+    },
+    {
+      "id": "G7",
+      "prompt": "Two headerless CSV files:\nusers.csv: id,name\nbal.csv: id,amount\n\nids are opaque STRINGS (so \"01\" and \"1\" are different keys). Inner-join on id. Sum amount per name (if a name had multiple ids they would aggregate; here one id each). Drop ids present in only one file.\n\nOutput:\nname total\nwhere total is an unpadded integer sum of amount.\n\nSort by total descending (numeric), then name ascending (lexicographic). Single trailing newline.\n\nNote: BSD join(1) requires both inputs sorted on the join key; unsorted join silently drops rows.",
+      "setup": "printf '01,Ann\\n02,Bob\\n10,Cy\\n1,Dee\\n' > users.csv\nprintf '1,100\\n01,50\\n02,25\\n10,10\\n3,999\\n' > bal.csv",
+      "reference_command": "join -t, <(sort -t, -k1,1 users.csv) <(sort -t, -k1,1 bal.csv) | awk -F, '{s[$2]+=$3} END{for(n in s) print n, s[n]}' | sort -k2,2nr -k1,1",
+      "golden": "Dee 100\nAnn 50\nBob 25\nCy 10",
+      "trap": "Coercing ids to numbers so 01==1; join without sort dropping rows; keeping unmatched id 3; wrong field after join.",
+      "proposer": "grok"
+    },
+    {
+      "id": "G8",
+      "prompt": "File text.txt contains English prose (may include punctuation and mixed case).\n\nNormalize to lowercase. Split into words by treating every non-ASCII-letter run as a delimiter (only a-z remain as word characters). Discard words shorter than 4 characters. Count frequencies.\n\nEmit the top 5 words as:\nCC:word\nwhere CC is the count zero-padded to width 2, and word is lowercase.\n\nOrder by count descending (numeric), then word ascending (lexicographic). If more than 5 words qualify after sorting, keep only the first 5. Single trailing newline. On macOS use BSD tr/sort/uniq (no GNU tr -s character-class surprises beyond what BSD supports).",
+      "setup": "printf 'The quick brown fox jumps over the lazy dog. The fox was quick, very quick!\\n' > text.txt\nprintf 'BROWN bears and brown foxes: quick thinking.\\n' >> text.txt",
+      "reference_command": "tr 'A-Z' 'a-z' < text.txt | tr -cs 'a-z' '\\n' | awk 'length>=4' | sort | uniq -c | awk '{printf \"%02d:%s\\n\",$1,$2}' | sort -t: -k1,1nr -k2,2 | head -5",
+      "golden": "04:quick\n03:brown\n01:bears\n01:foxes\n01:jumps",
+      "trap": "Keeping short words; failing to lowercase; punctuation glued to words; not zero-padding; wrong top-5 tie-break order.",
+      "proposer": "grok"
+    }
+  ],
+  "note": "v4 = 18 validated hard command-gen tasks (Fable Q1-Q10 + Grok G1-G8). All reference commands reproduce goldens. Adversarial cross-attempt: only Q5 stumped the opposing strong model (Grok); 17/18 solved one-shot by a frontier peer."
+}

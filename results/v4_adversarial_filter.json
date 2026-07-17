@@ -1,0 +1,146 @@
+[
+  {
+    "task": "Q1",
+    "proposer": "fable-5",
+    "solver": "grok",
+    "solved": 1,
+    "elapsed_s": 19.1,
+    "why": "ok"
+  },
+  {
+    "task": "Q2",
+    "proposer": "fable-5",
+    "solver": "grok",
+    "solved": 1,
+    "elapsed_s": 10.6,
+    "why": "ok"
+  },
+  {
+    "task": "Q3",
+    "proposer": "fable-5",
+    "solver": "grok",
+    "solved": 1,
+    "elapsed_s": 11.4,
+    "why": "ok"
+  },
+  {
+    "task": "Q4",
+    "proposer": "fable-5",
+    "solver": "grok",
+    "solved": 1,
+    "elapsed_s": 14.5,
+    "why": "ok"
+  },
+  {
+    "task": "Q5",
+    "proposer": "fable-5",
+    "solver": "grok",
+    "solved": 0,
+    "elapsed_s": 18.9,
+    "why": "got=''"
+  },
+  {
+    "task": "Q6",
+    "proposer": "fable-5",
+    "solver": "grok",
+    "solved": 1,
+    "elapsed_s": 12.3,
+    "why": "ok"
+  },
+  {
+    "task": "Q7",
+    "proposer": "fable-5",
+    "solver": "grok",
+    "solved": 1,
+    "elapsed_s": 11.1,
+    "why": "ok"
+  },
+  {
+    "task": "Q8",
+    "proposer": "fable-5",
+    "solver": "grok",
+    "solved": 1,
+    "elapsed_s": 26.0,
+    "why": "ok"
+  },
+  {
+    "task": "Q9",
+    "proposer": "fable-5",
+    "solver": "grok",
+    "solved": 1,
+    "elapsed_s": 19.0,
+    "why": "ok"
+  },
+  {
+    "task": "Q10",
+    "proposer": "fable-5",
+    "solver": "grok",
+    "solved": 1,
+    "elapsed_s": 23.6,
+    "why": "ok"
+  },
+  {
+    "task": "G1",
+    "proposer": "grok",
+    "solver": "fable-5",
+    "solved": 1,
+    "elapsed_s": 11.5,
+    "why": "ok"
+  },
+  {
+    "task": "G2",
+    "proposer": "grok",
+    "solver": "fable-5",
+    "solved": 1,
+    "elapsed_s": 17.2,
+    "why": "ok"
+  },
+  {
+    "task": "G3",
+    "proposer": "grok",
+    "solver": "fable-5",
+    "solved": 1,
+    "elapsed_s": 8.8,
+    "why": "ok"
+  },
+  {
+    "task": "G4",
+    "proposer": "grok",
+    "solver": "fable-5",
+    "solved": 1,
+    "elapsed_s": 9.6,
+    "why": "ok"
+  },
+  {
+    "task": "G5",
+    "proposer": "grok",
+    "solver": "fable-5",
+    "solved": 1,
+    "elapsed_s": 10.3,
+    "why": "ok"
+  },
+  {
+    "task": "G6",
+    "proposer": "grok",
+    "solver": "fable-5",
+    "solved": 1,
+    "elapsed_s": 14.6,
+    "why": "ok"
+  },
+  {
+    "task": "G7",
+    "proposer": "grok",
+    "solver": "fable-5",
+    "solved": 1,
+    "elapsed_s": 13.8,
+    "why": "ok"
+  },
+  {
+    "task": "G8",
+    "proposer": "grok",
+    "solver": "fable-5",
+    "solved": 1,
+    "elapsed_s": 14.5,
+    "why": "ok"
+  }
+]
