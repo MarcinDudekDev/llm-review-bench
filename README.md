@@ -144,6 +144,36 @@ reproducible-looking, completely wrong answer. We nearly shipped one.
 `--timeout` defaults to a generous 300s for that reason. If you want latency numbers, run ≥10
 interleaved trials and report medians with the spread, not means.
 
+### v3 — deterministic, execution-scored, n=10
+
+v3 removes the judge entirely. Each of 10 tasks asks for **one shell command**; the harness runs it in
+a sandbox and compares stdout to a golden value (`harness/exec_score.py`). Binary 1/0, no opinion. The
+tasks are BSD-vs-GNU and field-splitting traps (Q5's `\+` doing nothing on BSD sed, Q7's `comm`
+needing sorted input, Q10's unterminated-line `wc -l`). Reference commands are validated against the
+goldens before any model runs. Ran at **n=10** — the sample size v1/v2 lacked.
+
+| Model | Accuracy (n=10) | Latency median | mean | sd | min–max |
+|---|---|---|---|---|---|
+| Opus 4.6 | **100/100** | **17.0s** | 18.1s | 5.5 | 10.1–26.9 |
+| Opus 4.8 | **100/100** | 23.9s | 25.4s | 2.9 | 22.1–30.2 |
+
+**Accuracy tied at ceiling** (both perfect) — v3 doesn't discriminate on correctness. But the point
+was speed, measured properly:
+
+**On short tasks, Opus 4.6 is reliably *faster* — the opposite of v2.** Paired per-trial delta
+(4.8 − 4.6) averages **+7.3s**, 4.6 wins **8/10** trials, paired **t(9)=3.80, p≈0.0001**. This is not
+noise; n=10 pulled a real effect out of the variance that swamped v1.
+
+And it **reverses the v2 latency finding**, where 4.8 ran 2-3x faster on the *hard* task. Both are true:
+
+> **Latency ranking depends on task difficulty.** 4.6 is snappier on easy work but spends much longer
+> thinking on hard problems; 4.8's latency is flatter across both (note 4.8's sd is ~half of 4.6's).
+> "Which model is faster" has no task-independent answer — which is exactly the kind of claim a single
+> short benchmark run will confidently get wrong.
+
+The earlier "4.8 is faster" line from the v2 section is therefore not general. On this machine, for
+short deterministic commands, 4.6 wins on speed and ties on accuracy.
+
 ## Known limitations
 
 - **Small n.** Everything here is directional. Model-vs-model gaps at n=1–3 are not real.
