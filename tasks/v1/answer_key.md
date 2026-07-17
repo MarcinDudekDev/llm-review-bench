@@ -1,0 +1,15 @@
+B1 [SUBTLE] L12: `@lru_cache` on an `async def` caches the coroutine object, not the result — the first call works, but any cache hit returns an already-awaited coroutine, and `await fetch_score(...)` raises `RuntimeError: cannot reuse already awaited coroutine`. (Looks like an innocent perf decoration; requires knowing lru_cache is sync-only.)
+B2 [SUBTLE] L53: The SSE event is not terminated by a blank line — the f-string ends with a single `\n`, but the SSE spec dispatches an event only on an empty line (`\n\n`), so with the 2s sleep the client's events are delayed/merged and the stream is malformed. (Code looks complete; requires wire-level SSE knowledge.)
+B3 L53: The signal payload is a Python `dict` repr interpolated into the f-string — `{'slug': 'dashboard', ...}` with single quotes is not valid JSON, so Datastar cannot parse the `datastar-patch-signals` payload; it must be `json.dumps(...)`. (Distinct from B2; both live on line 53.)
+B4 [SUBTLE] L42: `asyncio.create_task(purge_expired())` discards the task reference — the event loop keeps only a weak reference, so the purge task can be garbage-collected mid-execution and any exception in it vanishes silently; the reference must be stored (or the work awaited/handed to a background-task mechanism). (Documented asyncio footgun; code reads as idiomatic fire-and-forget.)
+B5 L30-32: `purge_expired` deletes keys from `_cache` while iterating `_cache.items()` — raises `RuntimeError: dictionary changed size during iteration` on the first expired entry. Must iterate over a snapshot (`list(_cache.items())`).
+B6 L36-37: Mutable default argument — `extra: dict = {}` is created once and mutated on line 37, so all callers share (and leak state through) one dict. (The easy/classic one; a baseline check.)
+
+TRAPS — correct code that looks wrong (flagging these = false positive):
+T1 L9: Module-level `asyncio.Lock()` is fine on Python ≥3.10 — locks are no longer bound to an event loop at construction. Flagging "lock created outside the event loop / DeprecationWarning" is a false positive.
+T2 L55: `except Exception` does NOT swallow task cancellation — `asyncio.CancelledError` inherits from `BaseException` since Python 3.8, so cancellation propagates correctly. Flagging "swallows CancelledError / breaks cancellation on client disconnect" is a false positive.
+
+NEUTRAL (neither credit nor penalty — real observations but stylistic/minor, not planted defects):
+N1 L19-23: `_lock` held across the `await fetch_score()` call serializes all requests behind the slow upstream call (perf smell, intentional-looking design).
+N2 L55-56: `except Exception: pass` silently discards genuine errors (style/observability issue, not a mechanical defect).
+N3 L50: `request.is_disconnected()` polling only detects disconnect between iterations (inherent to the pattern, not a defect).
