@@ -174,6 +174,48 @@ And it **reverses the v2 latency finding**, where 4.8 ran 2-3x faster on the *ha
 The earlier "4.8 is faster" line from the v2 section is therefore not general. On this machine, for
 short deterministic commands, 4.6 wins on speed and ties on accuracy.
 
+### v4 — adversarially filtered, one-shot GUARANTEED, n=10
+
+v4 tests whether harder tasks separate the models, and fixes a validity hole the earlier versions had.
+
+**The one-shot hole.** v1–v3 called models through `claude -p` with **tools enabled by default**. Nothing
+stopped a model from creating the described input files, running its command, and revising before
+answering — which would make the "one shot, no execution" framing false and could inflate accuracy. A
+`num_turns` probe showed the models happened to answer in a single turn, but that was luck, not a
+guarantee. v4 closes it: **`--tools ""`** makes execution structurally impossible, and the harness
+**asserts `num_turns == 1`** on every call (a tool call forces a second turn), so one-shot is proven,
+not assumed.
+
+**It did not change the ceiling.** I initially guessed tools had propped up the 18/18 scores. Wrong —
+under the guaranteed condition both models are still essentially perfect. The ceiling is real.
+
+**Building hard tasks (adversarial filter).** "Make it hard" prompting gave a 10/10 ceiling twice, so
+v4 uses Fable and Grok as difficulty oracles: each proposes candidates, every reference command is
+validated by execution, then each model attempts the *other's* tasks one-shot. **17 of 18 were solved.**
+Only Fable's Q5 stumped the opposing peer (Grok) — and Q5 turns on this host's libm `%.2f` rounding,
+unknowable without running it. Finding: **frontier models can't easily author a shell task that stumps
+a frontier peer.** v4 runs all 18 validated tasks against the contenders.
+
+**Result (n=10, tools off, one-shot proven):**
+
+| Model | Accuracy | Latency median | The one miss |
+|---|---|---|---|
+| Opus 4.6 | **180/180** | 142.5s | — never missed |
+| Opus 4.8 | 179/180 | 124.2s | Q5 once (the platform rounding gotcha) |
+
+**Accuracy is saturated even here** — 4.6 perfect, 4.8's lone slip is an arguably unfair task. Shell
+command generation does not separate these two models on correctness, at any difficulty this method
+could produce.
+
+**Latency flips the other way from v3:** on the *hard* set 4.8 is faster (median 124s vs 142s), but only
+a trend (paired t(9)=−1.69, not significant). v3 had 4.6 *significantly* faster on *easy* tasks. Taken
+together that supports "latency ranking depends on task difficulty" — 4.6 quicker on easy work, 4.8
+quicker on hard — though only the easy-task direction clears significance at n=10.
+
+> **One-shot caveat for v1–v3:** those runs had tools available (fair, since both models did, but the
+> "one shot" label was not strictly enforced). Only v4 guarantees it. Re-running v1–v3 under `--tools ""`
+> is left as future work; v4's result (ceiling holds without tools) suggests it would not move much.
+
 ## Known limitations
 
 - **Small n.** Everything here is directional. Model-vs-model gaps at n=1–3 are not real.

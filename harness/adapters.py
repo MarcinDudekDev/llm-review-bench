@@ -12,17 +12,25 @@ import urllib.request
 def claude_cli(spec, prompt, timeout):
     """Anthropic models via the Claude Code CLI.
 
+    Tools are hard-disabled (`--tools ""`) so the model CANNOT execute, test, or
+    revise a command before answering — the "one shot, no execution" guarantee is
+    structural, not behavioral. We also assert num_turns == 1 (a tool call would
+    force a second turn), so any accidental tool use raises instead of scoring.
+
     Note: the [1m] suffix is not part of the model ID. The CLI strips it and
     translates it into the anthropic-beta context-1m-2025-08-07 header.
     An unrecognized suffix is silently dropped (no error, no 1M window).
     """
     p = subprocess.run(
-        ["claude", "--model", spec["model"], "-p", prompt, "--output-format", "json"],
-        capture_output=True, text=True, timeout=timeout, cwd="/tmp",
+        ["claude", "--model", spec["model"], "--tools", "", "-p", prompt,
+         "--output-format", "json"],
+        capture_output=True, text=True, timeout=timeout, cwd="/tmp", stdin=subprocess.DEVNULL,
     )
     d = json.loads(p.stdout)
     if d.get("is_error"):
         raise RuntimeError(f"{spec['id']}: API error {d.get('api_error_status')}")
+    if d.get("num_turns", 1) != 1:  # a tool call would have forced >1 turn
+        raise RuntimeError(f"{spec['id']}: num_turns={d.get('num_turns')} — not one-shot")
     return d.get("result", ""), d.get("total_cost_usd")
 
 

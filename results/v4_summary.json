@@ -1,0 +1,30 @@
+{
+  "task": "v4",
+  "n_trials": 10,
+  "condition": "tools disabled (--tools ''), num_turns==1 asserted (one-shot proven)",
+  "accuracy": {
+    "opus-4-6": "180/180 (perfect)",
+    "opus-4-8": "179/180 (one miss: Q5)"
+  },
+  "q5_note": "Q5 is a platform libm %.2f half-way rounding quirk, unknowable without execution; it also stumped Grok in the adversarial filter. Arguably an unfair task, not a capability discriminator.",
+  "latency_s": {
+    "opus-4-6": {
+      "median": 142.5,
+      "mean": 144.1,
+      "sd": 23.4
+    },
+    "opus-4-8": {
+      "median": 124.2,
+      "mean": 129.6,
+      "sd": 18.9
+    }
+  },
+  "paired_delta_48_minus_46": {
+    "mean": -14.4,
+    "sd": 27.0,
+    "t": -1.69,
+    "significant": false,
+    "note": "4.8 faster on HARD tasks (median 124 vs 142s) but only a trend (t=-1.69). Opposite of v3 where 4.6 was significantly faster on EASY tasks."
+  },
+  "conclusion": "Under a STRUCTURALLY GUARANTEED one-shot condition, shell command generation stays SATURATED for both frontier models: 4.6 perfect, 4.8's lone miss is an unfair rounding gotcha. Accuracy does not separate them. Enforcing the guarantee did NOT lower the ceiling (correcting an earlier guess that tools had propped it up). Latency ranking depends on task difficulty (4.6 faster easy/significant; 4.8 faster hard/trend)."
+}
