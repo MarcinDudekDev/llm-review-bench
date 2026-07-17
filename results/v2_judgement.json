@@ -1,0 +1,13 @@
+{
+  "mapping": {
+    "A": "opus-4-8",
+    "B": "opus-4-6",
+    "C": "grok",
+    "D": "fable-5"
+  },
+  "verdicts": {
+    "fable-5": "D_SCORE: 10/10\nD_FOUND: A:8, A:35, A:36, A:49, B:5, B:11, B:16, B:27, C:6, C:7\nD_FALSE_POSITIVES: none\n\nB_SCORE: 9.4/10\nB_FOUND: A:8, A:36, A:49, B:5, B:11, B:16, B:27, C:6, C:7\nB_FALSE_POSITIVES: none\n\nC_SCORE: 8.8/10\nC_FOUND: A:8, A:35, A:36, A:49, B:11, B:16, C:6, C:7\nC_FALSE_POSITIVES: none\n\nA_SCORE: 8.5/10\nA_FOUND: A:8, A:35, A:36, A:49, B:5, B:11, B:16, B:27, C:6, C:7\nA_FALSE_POSITIVES: C:9 (trap T6, zsh does not word-split unquoted expansion, \u22120.75); C:10 (same zsh no-split rule, not in key, \u22120.75)\n\nRANKING: D, B, C, A",
+    "grok": "A_SCORE: 8.5/10\nA_FOUND: A:8, A:35, A:36, A:49, B:5, B:11, B:16, B:27, C:6, C:7\nA_FALSE_POSITIVES: C:9 (T6 zsh unquoted $dest; -0.75), C:10 (unquoted $dest split; -0.75)\n\nB_SCORE: 9.4/10\nB_FOUND: A:8, A:36, A:49, B:5, B:11, B:16, B:27, C:6, C:7\nB_FALSE_POSITIVES: none\n\nC_SCORE: 8.8/10\nC_FOUND: A:8, A:35, A:36, A:49, B:11, B:16, C:6, C:7\nC_FALSE_POSITIVES: none\n\nD_SCORE: 10.0/10\nD_FOUND: A:8, A:35, A:36, A:49, B:5, B:11, B:16, B:27, C:6, C:7\nD_FALSE_POSITIVES: none\n\nRANKING: D, B, C, A\n\nStopped at: \u23f1 2026-07-17 16:25:15"
+  },
+  "trial": 3
+}

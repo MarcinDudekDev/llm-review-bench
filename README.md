@@ -91,6 +91,36 @@ preempted. There is no race. On this task the difference wasn't knowledge, it wa
 Caveat that matters more than the result: **n=1 task, both at the recall ceiling, decided by a single
 false positive.** That is directional, not a verdict. Which is exactly why v2 exists.
 
+### v2 — the ceiling broke, and so did the verdict
+
+v2 discriminated: no model got a stable 10/10, and the four models spread out. It also produced the
+most honest possible outcome — **the winner between 4.6 and 4.8 flips depending on the trial.**
+
+Blind-judged by Fable 5 and Grok (both judges agreed on every score to the decimal):
+
+| Model | Trial 2 | Trial 3 | Mean | What separated it |
+|---|---|---|---|---|
+| Opus 4.8 | **10.0** | 8.5 | **9.25** | Only model to hit a clean 10/10 (trial 2). Fell into trap T6 in trial 3 — flagged unquoted zsh `$dest` as word-splitting (zsh doesn't), −1.5. |
+| Opus 4.6 | 8.8 | **9.4** | **9.1** | Consistently missed **A:35** (Datastar 1.0 event rename) both trials. No false positives. |
+| Grok | 8.8 | 8.8 | 8.8 | Most stable. Missed `B:5`, `B:27` (PHP-specific) both trials. |
+| Fable 5 | 9.5 | 10.0 | 9.5 | Highest — but see self-bias note. Botched its *own* Part D in trial 2 (dropped `S1-out`). |
+
+**4.8 (9.25) vs 4.6 (9.1) is a tie at this sample size.** 4.8 has the higher ceiling — it's the only
+model that produced a flawless answer — but it's also the one that took trap bait when it slipped.
+4.6 never scored a 10 (it kept missing the Datastar rename) but never fell below 8.8 either. Higher
+variance, higher peak vs. lower variance, lower peak. Two trials cannot rank these two models, and the
+harness is honest enough to show that rather than average it away.
+
+Latency was the one consistent signal: on v2, **4.8 ran ~2-3x faster** (48-105s vs 159-182s, plus one
+4.6 timeout at the 300s cap). Unlike v1, this held across every trial — the harder task pulled the
+latency gap out of the noise floor, even as the accuracy gap stayed inside it.
+
+**Two documented judge-integrity issues, both visible in the data above:**
+1. **Self-bias.** Fable judged a field that included its own (anonymised) answer. In trial 2 it scored
+   itself 9.5 while Grok scored the same answer 8.5. Prefer judges outside the contender set.
+2. **The key can bite its author.** Fable *wrote* the Part D key and then got Part D wrong as a
+   contender — proof that authoring ground truth doesn't make a model immune to the task.
+
 ### The mistake worth copying
 
 Our first run used a **60-second timeout**. Result: 4.6 timed out with no output, 4.8 finished in

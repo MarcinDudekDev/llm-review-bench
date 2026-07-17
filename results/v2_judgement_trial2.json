@@ -1,0 +1,13 @@
+{
+  "mapping": {
+    "A": "opus-4-8",
+    "B": "opus-4-6",
+    "C": "grok",
+    "D": "fable-5"
+  },
+  "verdicts": {
+    "fable-5": "A_SCORE: 10/10\nA_FOUND: A:8, A:35, A:36, A:49, B:5, B:11, B:16, B:27, C:6, C:7 (10/10 bugs, 6.0) + Part D exact (4.0)\nA_FALSE_POSITIVES: none\n\nB_SCORE: 8.8/10\nB_FOUND: A:8, A:36 (newline-framing mechanism, accepted), A:49, B:5, B:11, B:16, B:27, C:7 (8 bugs, 4.8) + Part D exact (4.0); missed A:35, C:6\nB_FALSE_POSITIVES: none\n\nC_SCORE: 8.8/10\nC_FOUND: A:8, A:35, A:36, A:49, B:11, B:16, C:6, C:7 (8 bugs, 4.8) + Part D exact (4.0); missed B:5, B:27\nC_FALSE_POSITIVES: none\n\nD_SCORE: 9.5/10\nD_FOUND: A:8, A:35, A:36, A:49, B:5, B:11, B:16, B:27, C:6, C:7 (10/10 bugs, 6.0) + Part D missing `S1-out` (\u22120.5 \u2192 3.5)\nD_FALSE_POSITIVES: none\n\nRANKING: A, D, B, C\n\nNote on the B/C tie: both score 8.8 with identical finding counts (8), perfect Part D, and zero false positives \u2014 the rubric's secondary sort keys (Part D deltas, FP count) also tie, so their relative order is effectively arbitrary; I've listed B first only alphabetically.\n\nStopped at: \u23f1 2026-07-17 16:31:12",
+    "grok": "A_SCORE: 10/10\nA_FOUND: A:8, A:35, A:36, A:49, B:5, B:11, B:16, B:27, C:6, C:7\nA_FALSE_POSITIVES: none\nB_SCORE: 8.8/10\nB_FOUND: A:8, A:36, A:49, B:5, B:11, B:16, B:27, C:7\nB_FALSE_POSITIVES: none\nC_SCORE: 8.8/10\nC_FOUND: A:8, A:35, A:36, A:49, B:11, B:16, C:6, C:7\nC_FALSE_POSITIVES: none\nD_SCORE: 8.5/10\nD_FOUND: A:8, A:35, A:36, A:49, B:5, B:11, B:16, B:27, C:6, C:7\nD_FALSE_POSITIVES: none\nRANKING: A, B, C, D"
+  },
+  "trial": 2
+}

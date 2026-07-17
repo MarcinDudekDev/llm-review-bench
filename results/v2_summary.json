@@ -1,0 +1,66 @@
+{
+  "task": "v2",
+  "note": "n=2 usable trials (trial1 opus-4-6 timed out); winner flips by trial; between-trial variance exceeds model gap. Fable judged itself (self-bias: 9.5/10 vs grok's 8.5/10 in trial2).",
+  "scores": {
+    "opus-4-8": {
+      "mean": 9.25,
+      "min": 8.5,
+      "max": 10.0,
+      "trials": {
+        "2": {
+          "fable-5": 10.0,
+          "grok": 10.0
+        },
+        "3": {
+          "fable-5": 8.5,
+          "grok": 8.5
+        }
+      }
+    },
+    "opus-4-6": {
+      "mean": 9.1,
+      "min": 8.8,
+      "max": 9.4,
+      "trials": {
+        "2": {
+          "fable-5": 8.8,
+          "grok": 8.8
+        },
+        "3": {
+          "fable-5": 9.4,
+          "grok": 9.4
+        }
+      }
+    },
+    "grok": {
+      "mean": 8.8,
+      "min": 8.8,
+      "max": 8.8,
+      "trials": {
+        "2": {
+          "fable-5": 8.8,
+          "grok": 8.8
+        },
+        "3": {
+          "fable-5": 8.8,
+          "grok": 8.8
+        }
+      }
+    },
+    "fable-5": {
+      "mean": 9.5,
+      "min": 8.5,
+      "max": 10.0,
+      "trials": {
+        "2": {
+          "fable-5": 9.5,
+          "grok": 8.5
+        },
+        "3": {
+          "fable-5": 10.0,
+          "grok": 10.0
+        }
+      }
+    }
+  }
+}
