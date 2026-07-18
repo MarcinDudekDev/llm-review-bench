@@ -60,3 +60,13 @@ This audit covered two surfaces of the public `llm-review-bench` project: (a) a 
 **Tier 3 — LOW (cleanup):** the two cost `n/a` truthiness bugs, `--models` empty/`KeyError`/whitespace handling, whitespace-only command, `-nc` flag over-match, `chart.py:41` zero-label, and the README `143`→`142` rounding fix.
 
 Relevant files audited: `/Users/cminds/claude-tmp/llm-review-bench/harness/{adapters,run_bench,run_v3,run_v4,exec_score,consolidate,chart,judge,adversarial_filter}.py`, `/Users/cminds/claude-tmp/llm-review-bench/blog/article.html`, `/Users/cminds/claude-tmp/llm-review-bench/README.md`, `/Users/cminds/claude-tmp/llm-review-bench/results/*.json`.
+---
+
+## 5. Resolution (applied + independently verified)
+
+All 27 confirmed findings were addressed:
+
+- **22 code bugs** — fixed in `harness/` as additive guards (no functionality removed). The dead fork-bomb guard now blocks all variants; `grok_cli` raises on failure; null-content crashes guarded; the adversarial-filter first-line/None-sentinel fixes prevent false v4 survivors; runners validate `--models`; `consolidate` excludes error rows; `judge` handles >8 answers; `chart` renders gaps as `np.nan`.
+- **4 factual corrections** — applied to `blog/article.html` and `README.md` (Haiku "slowest on 3 of 4 tasks", Sonnet cost scoped, v4 methodology reconciled, 143→142).
+
+**Regression check.** Verified zero error/timeout rows in every committed result file, so **published numbers were never affected**; `consolidate.py` output is byte-identical after the fixes; `exec_score.py` self-test remains 10/10. A second independent multi-agent pass (10 agents) re-reviewed all 9 patched files: **0 incorrect fixes, 0 regressions**.
