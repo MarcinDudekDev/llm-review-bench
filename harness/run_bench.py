@@ -10,6 +10,7 @@ that drifting API conditions hit every model roughly equally.
 import argparse
 import json
 import pathlib
+import subprocess
 import time
 
 from adapters import ADAPTERS
@@ -21,7 +22,7 @@ def load_models(only):
     specs = json.loads((ROOT / "harness/models.json").read_text())["models"]
     specs = [s for s in specs if s.get("enabled", True) and not s["id"].startswith("_")]
     if only:
-        want = only.split(",")
+        want = {w.strip() for w in only.split(",") if w.strip()}
         specs = [s for s in specs if s["id"] in want]
     return specs
 
@@ -35,7 +36,7 @@ def run_one(spec, prompt, timeout):
                 "cost_usd": cost, "output": text, "error": None}
     except Exception as e:  # timeout, API error, adapter failure
         return {"elapsed_s": round(time.monotonic() - t0, 2),
-                "timed_out": type(e).__name__ == "TimeoutExpired",
+                "timed_out": isinstance(e, (subprocess.TimeoutExpired, TimeoutError)),
                 "cost_usd": None, "output": "", "error": f"{type(e).__name__}: {e}"}
 
 
@@ -51,6 +52,8 @@ def main():
 
     prompt = (ROOT / f"tasks/{args.task}/task.md").read_text()
     specs = load_models(args.models)
+    if not specs:
+        raise SystemExit(f"no models matched --models {args.models!r}; check spelling")
     print(f"task={args.task} models={[s['id'] for s in specs]} trials={args.trials}")
 
     rows = []
@@ -59,7 +62,7 @@ def main():
             r = run_one(spec, prompt, args.timeout)
             r |= {"trial": trial, "model_id": spec["id"], "label": spec["label"]}
             rows.append(r)
-            cost = f"${r['cost_usd']:.4f}" if r["cost_usd"] else "n/a"
+            cost = f"${r['cost_usd']:.4f}" if r["cost_usd"] is not None else "n/a"
             print(f"  trial{trial} {spec['id']:<10} {r['elapsed_s']:>7.2f}s {cost:>9}"
                   f"{'  ERROR: ' + r['error'] if r['error'] else ''}", flush=True)
 

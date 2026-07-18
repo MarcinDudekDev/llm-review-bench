@@ -31,7 +31,7 @@ def claude_cli(spec, prompt, timeout):
         raise RuntimeError(f"{spec['id']}: API error {d.get('api_error_status')}")
     if d.get("num_turns", 1) != 1:  # a tool call would have forced >1 turn
         raise RuntimeError(f"{spec['id']}: num_turns={d.get('num_turns')} — not one-shot")
-    return d.get("result", ""), d.get("total_cost_usd")
+    return (d.get("result") or ""), d.get("total_cost_usd")  # result can be null
 
 
 def grok_cli(spec, prompt, timeout):
@@ -40,7 +40,12 @@ def grok_cli(spec, prompt, timeout):
         ["grok", "--always-approve", "-p", prompt],
         capture_output=True, text=True, timeout=timeout, cwd="/tmp",
     )
-    return p.stdout.strip(), None
+    if p.returncode != 0:  # else an auth/network failure scores as a real empty answer
+        raise RuntimeError(f"{spec['id']}: grok exited {p.returncode}: {p.stderr.strip()[:200]}")
+    out = p.stdout.strip()
+    if not out:
+        raise RuntimeError(f"{spec['id']}: grok returned empty output")
+    return out, None
 
 
 def openrouter(spec, prompt, timeout):
@@ -53,12 +58,15 @@ def openrouter(spec, prompt, timeout):
         data=json.dumps({
             "model": spec["model"],
             "messages": [{"role": "user", "content": prompt}],
+            "usage": {"include": True},  # else usage.cost is never returned
         }).encode(),
         headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
     )
     with urllib.request.urlopen(req, timeout=timeout) as r:
         d = json.loads(r.read())
-    return d["choices"][0]["message"]["content"], d.get("usage", {}).get("cost")
+    # content can be null (reasoning-only / filtered / truncated) — never return None
+    text = d["choices"][0]["message"].get("content") or ""
+    return text, (d.get("usage") or {}).get("cost")
 
 
 ADAPTERS = {"claude_cli": claude_cli, "grok_cli": grok_cli, "openrouter": openrouter}

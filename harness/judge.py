@@ -14,11 +14,12 @@ import json
 import pathlib
 import random
 import re
+import string
 
 from adapters import ADAPTERS
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-LETTERS = "ABCDEFGH"
+LETTERS = string.ascii_uppercase
 
 TEMPLATE = """You are grading anonymous model answers to a code-review benchmark.
 Grade ONLY against the key and rubric below. Do not speculate about which model
@@ -63,6 +64,8 @@ def main():
     if len(picked) < 2:
         raise SystemExit(f"need >=2 usable answers for trial {args.trial}, got {len(picked)}")
 
+    if len(picked) > len(LETTERS):
+        raise SystemExit(f"{len(picked)} answers exceeds {len(LETTERS)} anonymisation letters")
     random.Random(args.seed).shuffle(picked)
     mapping = {LETTERS[i]: r["model_id"] for i, r in enumerate(picked)}
     answers = [(LETTERS[i], strip_ts(r["output"])) for i, r in enumerate(picked)]

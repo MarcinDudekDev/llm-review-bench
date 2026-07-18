@@ -36,7 +36,7 @@ def load_models(only: str) -> list[dict]:
     specs = json.loads((ROOT / "harness/models.json").read_text())["models"]
     specs = [s for s in specs if s.get("enabled", True) and not s["id"].startswith("_")]
     if only:
-        want = set(only.split(","))
+        want = {w.strip() for w in only.split(",") if w.strip()}
         specs = [s for s in specs if s["id"] in want]
     return specs
 
@@ -54,6 +54,8 @@ def main() -> None:
         f"{t['id']}. {t['prompt']}" for t in tasks
     )
     specs = load_models(args.models)
+    if not specs:
+        raise SystemExit(f"no models matched --models {args.models!r}; check spelling")
     print(f"v3: models={[s['id'] for s in specs]} trials={args.trials} tasks={len(tasks)}")
 
     rows = []
@@ -79,7 +81,7 @@ def main() -> None:
                          "elapsed_s": elapsed, "cost_usd": cost, "error": err,
                          "score": total, "per_q": per_q})
             print(f"  trial{trial:>2} {spec_m['id']:<10} score {total}/10  "
-                  f"{elapsed:>7.2f}s  {('$%.4f' % cost) if cost else 'n/a':>9}"
+                  f"{elapsed:>7.2f}s  {('$%.4f' % cost) if cost is not None else 'n/a':>9}"
                   f"{'  ERR ' + err if err else ''}", flush=True)
 
     (ROOT / "results/v3_runs.json").write_text(json.dumps(rows, indent=2))

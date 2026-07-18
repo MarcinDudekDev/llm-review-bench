@@ -41,7 +41,8 @@ def exec_scores(task, model):
         rows = load(cand)
         if not rows:
             continue
-        rs = [r for r in rows if r["model_id"] == model and "score" in r]
+        rs = [r for r in rows if r["model_id"] == model and "score" in r
+              and not r.get("error") and not r.get("timed_out")]
         if rs:
             return rs
     return None

@@ -20,12 +20,21 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 LINE = re.compile(r"^\s*([QG]\d+)\s*:\s*(.*?)\s*$")
 
 
+def _unwrap(cmd: str) -> str:
+    """Strip a balanced whole-command backtick wrap only; keep edge/interior
+    command-substitution backticks (e.g. `echo `date`` must not lose its tick)."""
+    cmd = cmd.strip()
+    if len(cmd) > 1 and cmd.startswith("`") and cmd.endswith("`"):
+        cmd = cmd[1:-1].strip()
+    return cmd
+
+
 def parse_commands(text: str) -> dict[str, str]:
     out: dict[str, str] = {}
-    for raw in text.splitlines():
+    for raw in (text or "").splitlines():
         m = LINE.match(raw)
         if m:
-            out[m.group(1)] = m.group(2).strip().strip("`").strip()
+            out[m.group(1)] = _unwrap(m.group(2))
     return out
 
 
@@ -44,7 +53,11 @@ def main() -> None:
               + f"\n\nAnswer with exactly {len(tasks)} lines, one per task id "
                 f"({', '.join(ids)}), each `<ID>: <command>`.")
     allm = {s["id"]: s for s in json.loads((ROOT / "harness/models.json").read_text())["models"]}
-    specs = [allm[m] for m in args.models.split(",")]
+    names = [m.strip() for m in args.models.split(",") if m.strip()]
+    missing = [n for n in names if n not in allm]
+    if missing:
+        raise SystemExit(f"unknown model id(s): {missing}; known: {sorted(allm)}")
+    specs = [allm[n] for n in names]
     print(f"v4: {len(tasks)} tasks, models={args.models}, trials={args.trials}")
 
     rows = []

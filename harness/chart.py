@@ -33,13 +33,15 @@ def grouped(metric, title, ylabel, fname, fmt="{:.0f}", ymax=None):
     w = 0.8 / n
     fig, ax = plt.subplots(figsize=(11, 6))
     for i, m in enumerate(MODELS):
-        vals = [DATA["tasks"][t][m].get(metric) for t in TASKS]
-        vals = [v if v is not None else 0 for v in vals]
+        raw = [DATA["tasks"][t][m].get(metric) for t in TASKS]
+        # a missing metric is a data GAP (np.nan → no bar), not a real zero
+        vals = [v if v is not None else np.nan for v in raw]
         bars = ax.bar(x + i * w - 0.4 + w / 2, vals, w,
                       label=DATA["labels"][m], color=COLORS[m], edgecolor="white", linewidth=0.5)
-        for b, v in zip(bars, vals):
-            if v:
-                ax.text(b.get_x() + b.get_width() / 2, v + (ymax or max(vals)) * 0.01,
+        span = ymax or max([v for v in raw if v is not None] or [1])
+        for b, v in zip(bars, raw):
+            if v is not None:  # label real values, including a genuine 0
+                ax.text(b.get_x() + b.get_width() / 2, v + span * 0.01,
                         fmt.format(v), ha="center", va="bottom", fontsize=8, color="#333")
     ax.set_xticks(x)
     ax.set_xticklabels([TASK_LABELS[t] for t in TASKS], fontsize=10)

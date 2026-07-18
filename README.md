@@ -276,7 +276,7 @@ Median latency (seconds), same runs:
 | v1 | 46.7 | 24.7 | **10.6** | 112.2 |
 | v2 | 224 | 174 | **115** | 153 |
 | v3 | 17.8 | 22.4 | **12.8** | 80.9 |
-| v4 | 143 | 124 | **93** | 193 |
+| v4 | 142 | 124 | **93** | 193 |
 
 Charts: `blog/chart-1.png` (accuracy) and `blog/chart-2.png` (latency).
 
@@ -284,8 +284,9 @@ Charts: `blog/chart-1.png` (accuracy) and `blog/chart-2.png` (latency).
 
 1. **Sonnet 5 is the value winner.** It matched Opus 4.8 on the hard command set (179/180), stayed within
    a point on hard review, ran the **fastest of all four models on every task**, and lists at about 60%
-   of Opus's per-token price ($3/$15 vs $5/$25), cheaper still per run since it burns fewer tokens. On
-   this data it's the sensible default for review + command work.
+   of Opus's per-token price ($3/$15 vs $5/$25) - cheaper per run on three of the four tasks (only on the
+   easy v1 task is it marginally the priciest of the three larger models). On this data it's the sensible
+   default for review + command work.
 2. **Haiku 4.5 is both the least accurate *and* the slowest model.** It drops to 122/180 on hard commands
    and 5.5/10 on easy review, and it's the slowest model on v1/v3/v4 — 80.9s vs Sonnet's 12.8s on short
    commands. The cause is **adaptive thinking**: Haiku burns a large thinking-token budget even on simple

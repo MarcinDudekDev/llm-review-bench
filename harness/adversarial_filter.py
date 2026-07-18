@@ -37,12 +37,15 @@ def solve_one(spec_model, task):
     try:
         text, _ = ADAPTERS[spec_model["adapter"]](spec_model, prompt, 240)
     except Exception as e:
-        return "", 0, f"solver_error: {type(e).__name__}", round(time.monotonic() - t0, 1)
+        # infra failure — return None score so the caller does NOT count this as
+        # an empirically-failed solve (which would falsely promote the task to v4)
+        return "", None, f"solver_error: {type(e).__name__}", round(time.monotonic() - t0, 1)
     cmd = ""
-    for ln in text.splitlines():
+    for ln in (text or "").splitlines():
         ln = ln.strip().strip("`").strip()
         if ln and not ln.lower().startswith(("here", "the ", "this", "note")):
             cmd = ln
+            break  # take the FIRST command line (models emit the command first)
     if not cmd:
         cmd = text.strip().splitlines()[-1].strip("`").strip() if text.strip() else ""
     s, why = score_one(cmd, task.get("setup", ""), task["golden"])
@@ -83,10 +86,10 @@ def main():
             cmd, s, why, el = solve_one(specs[solver_id], t)
             attempts.append({"task": t["id"], "proposer": t["proposer"],
                              "solver": solver_id, "solved": s, "elapsed_s": el, "why": why})
-            print(f"  {t['id']} ({t['proposer']}) vs {solver_id}: "
-                  f"{'SOLVED' if s else 'FAILED -> KEEP'}  {el}s")
-            if not s:  # opposing strong model failed -> empirically hard
-                survivors.append(t)
+            verdict = "SOLVED" if s == 1 else ("ERROR -> skip" if s is None else "FAILED -> KEEP")
+            print(f"  {t['id']} ({t['proposer']}) vs {solver_id}: {verdict}  {el}s")
+            if s == 0:  # opposing strong model genuinely failed -> empirically hard
+                survivors.append(t)  # s is None (infra error) is skipped, not kept
 
     out = {"system_prompt": json.loads((BENCH / "cand_fable.json").read_text())["system_prompt"],
            "tasks": survivors, "attempts": attempts,
